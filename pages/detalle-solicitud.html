@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle de la Solicitud - CAVE-U</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/detalle-solicitud.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+    </header>
+
+    <main>
+      <a href="inicio.html" class="volver">← Volver al Inicio</a>
+      <a href="ejecucion.html" class="volver">← Volver a Ejecución del Servicio</a>
+
+      <h2>ADV Detalles de la solicitud</h2>
+      <div class="detalle-solicitud">
+        <p><strong>ID Solicitud:</strong> <span id="idSolicitud">12345</span></p>
+        <p><strong>Solicitud:</strong> <span id="solicitud">Asesoría contable</span></p>
+        <p><strong>Descripción:</strong> <span id="descripcion">Solicitud para asesoría financiera para PyMEs</span></p>
+        <p><strong>Diagnóstico:</strong> <span id="diagnostico">Se identificó necesidad de flujo de caja</span></p>
+        <p><strong>Correo:</strong> <span id="correo">cliente@ejemplo.com</span></p>
+        <p><strong>Estado:</strong> <span id="estado">Pendiente</span></p>
+        <p><strong>Fecha Creación:</strong> <span id="fechaCreacion">2025-03-31</span></p>
+        <p><strong>Fecha Actualización:</strong> <span id="fechaActualizacion">2025-04-01</span></p>
+      </div>
+
+      <div class="tabla-tareas">
+        <h3>TABLA: Tareas (asociadas a la solicitud)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>idTarea</th>
+              <th>idSolicitud</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Fecha Creación</th>
+              <th>Fecha Actualización</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>12345</td>
+              <td>Revisión de documentos financieros</td>
+              <td>En proceso</td>
+              <td>2025-04-01</td>
+              <td>2025-04-02</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="botones">
+        <button class="guardar" onclick="guardarSolicitud()">Guardar</button>
+        <button class="cancelar" onclick="cancelar()">Cancelar</button>
+        <button class="ejecutar" onclick="ejecutarSolicitud()">Ejecutar</button>
+        <button class="eliminar" onclick="eliminarSolicitud()">Eliminar</button>
+      </div>
+    </main>
+    <p><a href="../index.html" class="btn">Volver al inicio</a></p>
+    <footer>
+      <p>&copy; 2025 CAVE-U</p>
+    </footer>
+  </div>
+
+  <script>
+    function guardarSolicitud() {
+      alert('Cambios guardados exitosamente.');
+    }
+
+    function cancelar() {
+      window.location.href = "ejecucion.html";
+    }
+
+    function ejecutarSolicitud() {
+      const estado = document.getElementById("estado");
+      const fechaActualizacion = document.getElementById("fechaActualizacion");
+
+      if (estado.innerText === "Ejecutada") {
+        alert("Esta solicitud ya fue ejecutada.");
+        return;
+      }
+
+      estado.innerText = "Ejecutada";
+      const hoy = new Date().toISOString().split('T')[0];
+      fechaActualizacion.innerText = hoy;
+
+      alert("Solicitud ejecutada correctamente.");
+    }
+
+    function eliminarSolicitud() {
+      if (confirm("¿Estás seguro de que deseas eliminar esta solicitud? Esta acción no se puede deshacer.")) {
+        alert("Solicitud eliminada.");
+        window.location.href = "ejecucion.html";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consultorio Académico Virtual Empresarial Uniminuto - Ejecución del Servicio</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+    
+    .wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      background-color: #003366;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    header h1 {
+      margin: 0;
+      padding: 0 1px;
+    }
+    
+    nav {
+      background-color: #003366;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+    }
+    
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    nav ul li {
+      margin: 0 10px;
+    }
+    
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 20px;
+      transition: background-color 0.3s;
+    }
+    
+    nav ul li a:hover, nav ul li a.active {
+      background-color: black;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1px;
+      flex-grow: 1;
+    }
+    
+    main {
+      padding: 200px 0;
+    }
+    
+    h2 {
+      color: #2c3e50;
+      margin-top: 0;
+    }
+    
+    .page-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    
+    .section {
+      margin-bottom: 40px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #f5f5f5;
+    }
+
+    button {
+      margin: 2px;
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-action {
+      padding: 8px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .volver {
+      background-color: #7f8c8d;
+      color: white;
+      margin-bottom: 20px;
+      display: inline-block;
+      padding: 8px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .volver:hover {
+      background-color: #6c7a7d;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    footer {
+      background-color: #003366;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      margin-top: auto;
+    }
+    
+    footer p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="registro.html">Registro</a></li>
+          <li><a href="perfil.html">Perfil</a></li>
+          <li><a href="gestion.html">Gestión</a></li>
+          <li><a href="ejecucion.html" class="active">Ejecución</a></li>
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+          <li><a href="notificaciones.html">Notificaciones</a></li>
+          <li><a href="ayuda.html">Ayuda</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="container">
+      <main>
+        <h2 class="page-title">Ejecución de Servicios</h2>
+      
+        <div class="section">
+          <h2>Tareas</h2>
+          <button onclick="agregarFila('tareas')">Agregar Tarea</button>
+          <table id="tareas">
+            <thead>
+              <tr>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Responsable</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+      
+        <div class="section">
+          <h2>Informes</h2>
+          <button onclick="agregarFila('informes')">Agregar Informe</button>
+          <table id="informes">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Archivo</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+      
+        <!-- Mover aquí el botón "Volver al inicio" -->
+        <a href="../index.html" class="volver">← Volver al inicio</a>
+      </main>      
+    </div>
+
+    <footer>
+      <p>&copy; 2025 CAVE-U</p>
+    </footer>
+  </div>
+
+  <script>
+    // Cargar datos guardados al iniciar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      cargarTablasGuardadas();
+    });
+    
+    function cargarTablasGuardadas() {
+      // Intentar cargar tareas guardadas
+      const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
+      const tablasTareas = document.getElementById('tareas').getElementsByTagName('tbody')[0];
+      tablasTareas.innerHTML = '';
+      
+      tareasGuardadas.forEach(tarea => {
+        const fila = tablasTareas.insertRow();
+        
+        // Añadir celdas con los datos
+        const celdaDesc = fila.insertCell();
+        celdaDesc.textContent = tarea.descripcion;
+        
+        const celdaEstado = fila.insertCell();
+        celdaEstado.textContent = tarea.estado;
+        
+        const celdaResp = fila.insertCell();
+        celdaResp.textContent = tarea.responsable;
+        
+        const celdaFecha = fila.insertCell();
+        celdaFecha.textContent = tarea.fecha;
+        
+        // Añadir botones de acción
+        const celdaAcciones = fila.insertCell();
+        celdaAcciones.innerHTML = `
+          <button onclick="editarFila(this, 'tareas')">Editar</button>
+          <button onclick="eliminarFila(this, 'tareas', ${tarea.id})">Eliminar</button>
+        `;
+      });
+      
+      // Intentar cargar informes guardados
+      const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
+      const tablasInformes = document.getElementById('informes').getElementsByTagName('tbody')[0];
+      tablasInformes.innerHTML = '';
+      
+      informesGuardados.forEach(informe => {
+        const fila = tablasInformes.insertRow();
+        
+        // Añadir celdas con los datos
+        const celdaTitulo = fila.insertCell();
+        celdaTitulo.textContent = informe.titulo;
+        
+        const celdaDesc = fila.insertCell();
+        celdaDesc.textContent = informe.descripcion;
+        
+        const celdaArchivo = fila.insertCell();
+        celdaArchivo.textContent = informe.archivo;
+        
+        const celdaFecha = fila.insertCell();
+        celdaFecha.textContent = informe.fecha;
+        
+        // Añadir botones de acción
+        const celdaAcciones = fila.insertCell();
+        celdaAcciones.innerHTML = `
+          <button onclick="editarFila(this, 'informes')">Editar</button>
+          <button onclick="eliminarFila(this, 'informes', ${informe.id})">Eliminar</button>
+        `;
+      });
+    }
+
+    function agregarFila(tablaId) {
+      const tabla = document.getElementById(tablaId).getElementsByTagName('tbody')[0];
+      const fila = tabla.insertRow();
+      const columnas = 4;
+
+      for (let i = 0; i < columnas; i++) {
+        const celda = fila.insertCell();
+        celda.innerHTML = `<input type="text">`;
+      }
+
+      const celdaAcciones = fila.insertCell();
+      celdaAcciones.innerHTML = `
+        <button onclick="guardarFila(this, '${tablaId}')">Guardar</button>
+        <button onclick="eliminarFila(this)">Eliminar</button>
+      `;
+    }
+
+    function guardarFila(boton, tablaId) {
+      const fila = boton.closest('tr');
+      const celdas = fila.querySelectorAll('td');
+      let datos = [];
+
+      for (let i = 0; i < celdas.length - 1; i++) {
+        const input = celdas[i].querySelector('input');
+        const valor = input ? input.value.trim() : '';
+        datos.push(valor);
+        celdas[i].textContent = valor;
+      }
+
+      // Crear objeto para guardar según el tipo de tabla
+      const id = Date.now();
+      let itemGuardar;
+      
+      if (tablaId === "tareas") {
+        itemGuardar = {
+          id: id,
+          descripcion: datos[0] || "Sin descripción",
+          estado: datos[1] || "Pendiente",
+          responsable: datos[2] || "",
+          fecha: datos[3] || new Date().toLocaleDateString()
+        };
+        
+        // Guardar en localStorage
+        const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
+        tareasGuardadas.push(itemGuardar);
+        localStorage.setItem('tareas', JSON.stringify(tareasGuardadas));
+        
+        // También guardar como solicitud
+        guardarEnLocalStorage({
+          id: id,
+          tipo: "Tarea",
+          estado: itemGuardar.estado,
+          responsable: itemGuardar.responsable,
+          fecha: itemGuardar.fecha
+        });
+      } else if (tablaId === "informes") {
+        itemGuardar = {
+          id: id,
+          titulo: datos[0] || "Sin título",
+          descripcion: datos[1] || "",
+          archivo: datos[2] || "",
+          fecha: datos[3] || new Date().toLocaleDateString()
+        };
+        
+        // Guardar en localStorage
+        const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
+        informesGuardados.push(itemGuardar);
+        localStorage.setItem('informes', JSON.stringify(informesGuardados));
+      }
+
+      celdas[celdas.length - 1].innerHTML = `
+        <button onclick="editarFila(this, '${tablaId}')">Editar</button>
+        <button onclick="eliminarFila(this, '${tablaId}', ${id})">Eliminar</button>
+      `;
+    }
+
+    function editarFila(boton, tablaId) {
+      const fila = boton.closest('tr');
+      const celdas = fila.querySelectorAll('td');
+
+      for (let i = 0; i < celdas.length - 1; i++) {
+        const texto = celdas[i].textContent;
+        celdas[i].innerHTML = `<input type="text" value="${texto}">`;
+      }
+
+      celdas[celdas.length - 1].innerHTML = `
+        <button onclick="guardarEdicion(this, '${tablaId}')">Guardar</button>
+        <button onclick="eliminarFila(this)">Eliminar</button>
+      `;
+    }
+    
+    function guardarEdicion(boton, tablaId) {
+      const fila = boton.closest('tr');
+      const celdas = fila.querySelectorAll('td');
+      let datos = [];
+      
+      // ID original para identificar el elemento a actualizar
+      const filaIndex = fila.rowIndex - 1; // Restar 1 por el encabezado
+      
+      for (let i = 0; i < celdas.length - 1; i++) {
+        const input = celdas[i].querySelector('input');
+        const valor = input ? input.value.trim() : '';
+        datos.push(valor);
+        celdas[i].textContent = valor;
+      }
+      
+      if (tablaId === "tareas") {
+        // Actualizar tarea en localStorage
+        const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
+        if (filaIndex >= 0 && filaIndex < tareasGuardadas.length) {
+          const id = tareasGuardadas[filaIndex].id;
+          tareasGuardadas[filaIndex] = {
+            id: id,
+            descripcion: datos[0],
+            estado: datos[1],
+            responsable: datos[2],
+            fecha: datos[3]
+          };
+          localStorage.setItem('tareas', JSON.stringify(tareasGuardadas));
+          
+          celdas[celdas.length - 1].innerHTML = `
+            <button onclick="editarFila(this, '${tablaId}')">Editar</button>
+            <button onclick="eliminarFila(this, '${tablaId}', ${id})">Eliminar</button>
+          `;
+        }
+      } else if (tablaId === "informes") {
+        // Actualizar informe en localStorage
+        const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
+        if (filaIndex >= 0 && filaIndex < informesGuardados.length) {
+          const id = informesGuardados[filaIndex].id;
+          informesGuardados[filaIndex] = {
+            id: id,
+            titulo: datos[0],
+            descripcion: datos[1],
+            archivo: datos[2],
+            fecha: datos[3]
+          };
+          localStorage.setItem('informes', JSON.stringify(informesGuardados));
+          
+          celdas[celdas.length - 1].innerHTML = `
+            <button onclick="editarFila(this, '${tablaId}')">Editar</button>
+            <button onclick="eliminarFila(this, '${tablaId}', ${id})">Eliminar</button>
+          `;
+        }
+      }
+    }
+
+    function eliminarFila(boton, tablaId, id) {
+      const fila = boton.closest('tr');
+      const filaIndex = fila.rowIndex - 1; // Restar 1 por el encabezado
+      
+      if (tablaId === "tareas") {
+        // Eliminar de localStorage
+        const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
+        if (id && tareasGuardadas.length > 0) {
+          const nuevasTareas = tareasGuardadas.filter(tarea => tarea.id !== id);
+          localStorage.setItem('tareas', JSON.stringify(nuevasTareas));
+        }
+      } else if (tablaId === "informes") {
+        // Eliminar de localStorage
+        const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
+        if (id && informesGuardados.length > 0) {
+          const nuevosInformes = informesGuardados.filter(informe => informe.id !== id);
+          localStorage.setItem('informes', JSON.stringify(nuevosInformes));
+        }
+      }
+      
+      // Eliminar fila de la tabla
+      fila.remove();
+    }
+
+    function guardarEnLocalStorage(solicitud) {
+      const solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+      solicitudes.push(solicitud);
+      localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
+    }
+  </script>
+</body>
+</html>

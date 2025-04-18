@@ -1,0 +1,380 @@
+/* Reset general */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Envoltura principal para controlar altura y footer al fondo */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Contenedor general del contenido */
+.container {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 20px;
+    flex: 1; /* permite que el main crezca para empujar el footer */
+    padding-top: 120px; /* espacio para el header fijo */
+}
+
+/* HEADER FIJO */
+header {
+    background-color: #003366;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    border-bottom: 3px solid #002244;
+    box-sizing: border-box; /* Evita que el padding aumente el ancho total */
+}
+
+/* FOOTER NORMAL (no fijo) */
+footer {
+    background-color: #003366;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 3px solid #002244;
+    width: 100%;
+    box-sizing: border-box; /* Evita que el padding aumente el ancho total */
+}
+
+/* Títulos */
+h1, h2 {
+    margin: 0 0 10px;
+}
+
+/* Contenido en tarjetas */
+.home-content,
+.page-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Botones de acción */
+.action-buttons {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Estilos comunes de botón */
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border: none;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+/* Botón primario */
+.btn.primary {
+    background-color: #0066cc;
+    color: white;
+}
+
+.btn.primary:hover {
+    background-color: #004999;
+}
+
+/* Botón secundario */
+.btn.secondary {
+    background-color: #cccccc;
+    color: #333;
+}
+
+.btn.secondary:hover {
+    background-color: #aaaaaa;
+}
+
+/* Botón de regreso */
+.back-button {
+    background-color: #999;
+    color: white;
+    margin-top: 20px;
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.back-button:hover {
+    background-color: #666;
+}
+
+/* Imagen placeholder */
+.image-placeholder {
+    width: 100%;
+    height: 250px;
+    background-color: #ddd;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Navegación */
+nav {
+    margin: 20px 0;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Para responsividad en pantallas pequeñas */
+    padding: 0;
+    margin: 0;
+    background-color: #003366;
+    border-radius: 20px;
+}
+
+nav ul li {
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li a {
+    display: block;
+    text-decoration: none;
+    padding: 10px 15px;
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: #003366;
+    border-radius: 20px;
+}
+nav ul li a.active {
+    background-color: #050000;
+    border-radius: 20px;
+}
+
+/* Estilo general para listas */
+ul:not(nav ul) {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    padding-inline-start: 40px;
+}
+
+section {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+/* Formularios */
+form {
+    margin-top: 20px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Contenedor de servicios */
+.servicios-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.servicio-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    width: calc(33.333% - 20px); /* Distribución 3 por fila con gap */
+    min-width: 280px; /* Mínimo ancho para responsividad */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-in-out;
+    box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+}
+
+.servicio-card:hover {
+    transform: translateY(-5px);
+}
+
+.servicio-card h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+}
+
+.servicio-card p {
+    font-size: 0.95em;
+    margin-bottom: 10px;
+}
+
+.servicio-card .btn {
+    display: inline-block;
+    background-color: #007BFF;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.servicio-card .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .container {
+        padding-top: 150px; /* Más espacio para el header en móviles */
+    }
+    
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    nav ul li {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+    }
+    
+    nav ul li a {
+        border-radius: 0;
+    }
+    
+    .servicio-card {
+        width: 100%; /* Una tarjeta por fila en móviles */
+    }
+}
+
+/* Estilos específicos para la página de detalle de solicitud */
+main {
+    padding: 20px;
+}
+
+.volver {
+    display: inline-block;
+    margin-bottom: 10px;
+    background-color: #2ecc71;
+    padding: 8px 15px;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+}
+
+.volver:hover {
+    background-color: #27ae60;
+}
+
+.detalle-solicitud {
+    background-color: #ecf0f1;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.detalle-solicitud p {
+    margin: 10px 0;
+}
+
+.tabla-tareas table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tabla-tareas th,
+.tabla-tareas td {
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    text-align: left;
+}
+
+.tabla-tareas th {
+    background-color: #003366;
+    color: white;
+}
+
+.tabla-tareas tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.tabla-tareas tr:hover {
+    background-color: #f1f1f1;
+}
+
+.botones {
+    margin-top: 20px;
+}
+
+.botones button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.botones button:hover {
+    background-color: #2980b9;
+}
+
+.botones .eliminar {
+    background-color: #e74c3c;
+}
+
+.botones .eliminar:hover {
+    background-color: #c0392b;
+}
+
+/* Media queries adicionales para la página de detalle de solicitud */
+@media (max-width: 768px) {
+    .botones {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .botones button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
