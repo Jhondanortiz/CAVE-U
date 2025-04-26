@@ -378,3 +378,97 @@ main {
         margin-bottom: 10px;
     }
 }
+
+th {
+    color: #050000;
+}
+
+.tabla-tareas th {
+    background-color: white;
+    color: #050000;
+}
+
+.file-upload {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .file-upload input[type="file"] {
+    margin-bottom: 10px;
+  }
+  
+  .file-icon {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  
+  .file-icon i {
+    margin-right: 5px;
+    font-size: 18px;
+  }
+  
+  .estado-upload {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  
+  .exito {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .en-proceso {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .btn-eliminar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-descargar {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+  }
+  
+  .tabla-tareas table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .tabla-tareas th, .tabla-tareas td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .tabla-tareas th {
+    background-color: #f2f2f2;
+  }

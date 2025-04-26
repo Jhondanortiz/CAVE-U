@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Detalle de la Solicitud - CAVE-U</title>
   <link rel="stylesheet" href="../css/styles.css">
-  <link rel="stylesheet" href="../css/detalle-solicitud.css">
 </head>
 <body>
   <div class="wrapper">
@@ -21,11 +20,17 @@
         <p><strong>ID Solicitud:</strong> <span id="idSolicitud">12345</span></p>
         <p><strong>Solicitud:</strong> <span id="solicitud">Asesoría contable</span></p>
         <p><strong>Descripción:</strong> <span id="descripcion">Solicitud para asesoría financiera para PyMEs</span></p>
-        <p><strong>Diagnóstico:</strong> <span id="diagnostico">Se identificó necesidad de flujo de caja</span></p>
         <p><strong>Correo:</strong> <span id="correo">cliente@ejemplo.com</span></p>
         <p><strong>Estado:</strong> <span id="estado">Pendiente</span></p>
         <p><strong>Fecha Creación:</strong> <span id="fechaCreacion">2025-03-31</span></p>
-        <p><strong>Fecha Actualización:</strong> <span id="fechaActualizacion">2025-04-01</span></p>
+        <p><strong>Fecha de Respuesta:</strong> <span id="fechaRespuesta">2025-04-01</span></p>
+      </div>
+
+      <div class="file-upload">
+        <h3>Subir documentos para esta solicitud</h3>
+        <input type="file" id="documentoSolicitud" name="documentoSolicitud">
+        <button onclick="subirDocumento()">Subir Documento</button>
+        <div id="mensajeSubida"></div>
       </div>
 
       <div class="tabla-tareas">
@@ -33,22 +38,52 @@
         <table>
           <thead>
             <tr>
-              <th>idTarea</th>
               <th>idSolicitud</th>
               <th>Descripción</th>
               <th>Estado</th>
               <th>Fecha Creación</th>
-              <th>Fecha Actualización</th>
+              <th>Fecha de Respuesta</th>
+              <th></th>
+              <th>Documento Subido</th>
+              <th>Solución/Respuesta</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
+          <tbody id="tablaTareas">
+            <tr id="tarea-1">
               <td>12345</td>
               <td>Revisión de documentos financieros</td>
               <td>En proceso</td>
               <td>2025-04-01</td>
               <td>2025-04-02</td>
+              <td><button class="btn-eliminar" onclick="eliminarTarea(1)">Eliminar</button></td>
+              <td>
+                <div class="file-icon">
+                  <i>📄</i> balance-financiero.pdf
+                  <span class="estado-upload exito">Subido</span>
+                </div>
+              </td>
+              <td>
+                <span class="en-proceso">En proceso</span>
+              </td>
+            </tr>
+            <tr id="tarea-2">
+              <td>12345</td>
+              <td>Análisis de flujo de caja</td>
+              <td>Completado</td>
+              <td>2025-04-02</td>
+              <td>2025-04-05</td>
+              <td><button class="btn-eliminar" onclick="eliminarTarea(2)">Eliminar</button></td>
+              <td>
+                <div class="file-icon">
+                  <i>📊</i> flujo-caja-2025.xlsx
+                  <span class="estado-upload exito">Subido</span>
+                </div>
+              </td>
+              <td>
+                <a href="#" class="btn-descargar" onclick="descargarSolucion('solucion-flujo-caja.pdf')">
+                  <i>📥</i> Descargar solución
+                </a>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -78,7 +113,7 @@
 
     function ejecutarSolicitud() {
       const estado = document.getElementById("estado");
-      const fechaActualizacion = document.getElementById("fechaActualizacion");
+      const fechaRespuesta = document.getElementById("fechaRespuesta");
 
       if (estado.innerText === "Ejecutada") {
         alert("Esta solicitud ya fue ejecutada.");
@@ -87,7 +122,7 @@
 
       estado.innerText = "Ejecutada";
       const hoy = new Date().toISOString().split('T')[0];
-      fechaActualizacion.innerText = hoy;
+      fechaRespuesta.innerText = hoy;
 
       alert("Solicitud ejecutada correctamente.");
     }
@@ -97,6 +132,90 @@
         alert("Solicitud eliminada.");
         window.location.href = "ejecucion.html";
       }
+    }
+    
+    function eliminarTarea(idTarea) {
+      if (confirm("¿Estás seguro de que deseas eliminar esta tarea? Esta acción no se puede deshacer.")) {
+        const fila = document.getElementById(`tarea-${idTarea}`);
+        if (fila) {
+          fila.remove();
+          alert("Tarea eliminada correctamente.");
+        }
+      }
+    }
+    
+    function subirDocumento() {
+      const fileInput = document.getElementById('documentoSolicitud');
+      const mensajeDiv = document.getElementById('mensajeSubida');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        mensajeDiv.innerHTML = '<p style="color: red;">Por favor seleccione un archivo para subir.</p>';
+        return;
+      }
+      
+      const fileName = fileInput.files[0].name;
+      
+      // Simulamos la subida del archivo (en un caso real, esto sería una petición AJAX)
+      mensajeDiv.innerHTML = '<p style="color: blue;">Subiendo archivo...</p>';
+      
+      setTimeout(() => {
+        // Simulamos que la subida fue exitosa
+        mensajeDiv.innerHTML = `<p style="color: green;">El archivo "${fileName}" se ha subido correctamente.</p>`;
+        
+        // Agregamos el archivo a la tabla
+        const tablaTareas = document.getElementById('tablaTareas');
+        const nuevaFila = document.createElement('tr');
+        const idNuevaTarea = tablaTareas.children.length + 1;
+        nuevaFila.id = `tarea-${idNuevaTarea}`;
+        
+        // Obtenemos la extensión del archivo para mostrar el icono adecuado
+        const extension = fileName.split('.').pop().toLowerCase();
+        let icono = '📄'; // Documento genérico por defecto
+        
+        if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(extension)) {
+          icono = '🖼️'; // Imagen
+        } else if (['pdf'].includes(extension)) {
+          icono = '📑'; // PDF
+        } else if (['doc', 'docx'].includes(extension)) {
+          icono = '📝'; // Word
+        } else if (['xls', 'xlsx'].includes(extension)) {
+          icono = '📊'; // Excel
+        } else if (['ppt', 'pptx'].includes(extension)) {
+          icono = '📽️'; // PowerPoint
+        } else if (['zip', 'rar', '7z'].includes(extension)) {
+          icono = '📦'; // Archivo comprimido
+        }
+        
+        const fechaHoy = new Date().toISOString().split('T')[0];
+        
+        nuevaFila.innerHTML = `
+          <td>12345</td>
+          <td>Nueva tarea relacionada con ${fileName}</td>
+          <td>Pendiente</td>
+          <td>${fechaHoy}</td>
+          <td>-</td>
+          <td><button class="btn-eliminar" onclick="eliminarTarea(${idNuevaTarea})">Eliminar</button></td>
+          <td>
+            <div class="file-icon">
+              <i>${icono}</i> ${fileName}
+              <span class="estado-upload exito">Subido</span>
+            </div>
+          </td>
+          <td>
+            <span class="en-proceso">En proceso</span>
+          </td>
+        `;
+        
+        tablaTareas.appendChild(nuevaFila);
+        
+        // Limpiamos el input de archivo
+        fileInput.value = '';
+      }, 1500);
+    }
+    
+    function descargarSolucion(nombreArchivo) {
+      alert(`Descargando solución: ${nombreArchivo}`);
+      // En un caso real, aquí se iniciaría la descarga del archivo
     }
   </script>
 </body>
