@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario - CAVE-U</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="catalogo.html">Catálogo</a></li>
+                    <li><a href="registro.html">Registro</a></li>
+                    <li><a href="perfil.html" class="active">Perfil</a></li>
+                    <li><a href="ejecucion.html">Ejecución</a></li>
+                    <li><a href="solicitudes.html">Solicitudes</a></li>
+                    <li><a href="notificaciones.html">Notificaciones</a></li>
+                    <li><a href="ayuda.html">Ayuda</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="container">
+            <main>
+                <section class="page-content">
+                    <h2>Perfil del Usuario</h2>
+
+                    <div class="profile-box">
+                        <p><strong>Nombre:</strong> <span id="perfil-nombre">Juan Pérez</span></p>
+                        <p><strong>Correo:</strong> <span id="perfil-correo">juanperez@ejemplo.com</span></p>
+                        <p><strong>Rol:</strong> <span id="perfil-rol">Empresario</span></p>
+                        <p><strong>Teléfono:</strong> <span id="perfil-telefono">+57 310 123 4567</span></p>
+                        <p><strong>Ciudad:</strong> <span id="perfil-ciudad">Bogotá</span></p>
+                        <p><strong>Área de Interés:</strong> <span id="perfil-area">Asesoría Legal</span></p>
+                        <div id="bio-container" style="display: none;">
+                            <p><strong>Biografía:</strong></p>
+                            <p id="perfil-bio"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="editar-perfil.html" class="btn primary">Editar Perfil</a>
+                        <a href="../index.html" class="btn secondary">Volver al inicio</a>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 CAVE-U</p>
+        </footer>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script>
+        // Cargar datos del perfil al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Definir mapeo de roles
+            const rolMap = {
+                'empresario': 'Empresario',
+                'estudiante': 'Estudiante',
+                'docente': 'Docente',
+                'administrativo': 'Administrativo'
+            };
+            
+            // Definir mapeo de áreas
+            const areaMap = {
+                'legal': 'Asesoría Legal',
+                'finanzas': 'Finanzas',
+                'marketing': 'Marketing',
+                'rrhh': 'Recursos Humanos',
+                'tecnologia': 'Tecnología',
+                'operaciones': 'Operaciones'
+            };
+            
+            // Datos predeterminados por si no hay datos guardados
+            const defaultData = {
+                nombre: 'Juan Pérez',
+                correo: 'juanperez@ejemplo.com',
+                rol: 'empresario',
+                telefono: '+57 310 123 4567',
+                ciudad: 'Bogotá',
+                area: 'legal',
+                bio: ''
+            };
+            
+            // Intentar obtener datos guardados, o usar predeterminados
+            const userData = JSON.parse(localStorage.getItem('userData')) || defaultData;
+            
+            // Actualizar la información del perfil
+            document.getElementById('perfil-nombre').textContent = userData.nombre;
+            document.getElementById('perfil-correo').textContent = userData.correo;
+            document.getElementById('perfil-rol').textContent = rolMap[userData.rol] || userData.rol;
+            document.getElementById('perfil-telefono').textContent = userData.telefono;
+            document.getElementById('perfil-ciudad').textContent = userData.ciudad;
+            document.getElementById('perfil-area').textContent = areaMap[userData.area] || userData.area;
+            
+            // Mostrar biografía si existe
+            if (userData.bio && userData.bio.trim() !== '') {
+                document.getElementById('bio-container').style.display = 'block';
+                document.getElementById('perfil-bio').textContent = userData.bio;
+            }
+        });
+    </script>
+</body>
+</html>

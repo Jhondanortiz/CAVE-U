@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle de la Solicitud - CAVE-U</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+    </header>
+
+    <main>
+      <a href="inicio.html" class="volver">← Volver al Inicio</a>
+      <a href="ejecucion.html" class="volver">← Volver a Ejecución del Servicio</a>
+
+      <h2>Detalles de la solicitud</h2>
+      <div class="detalle-solicitud">
+        <div>
+          <label for="idSolicitud">ID Solicitud:</label>
+          <span id="idSolicitud" class="id-solicitud">SOL-2025-</span>
+        </div>
+        <div>
+          <label for="tipoSolicitud">Tipo de Solicitud:</label>
+          <select id="tipoSolicitud">
+            <option value="">-- Seleccione un tipo de solicitud --</option>
+            <option value="Asesoría Contable">Asesoría Contable</option>
+            <option value="Consultoría Administrativa">Consultoría Administrativa</option>
+            <option value="Capacitación Empresarial">Capacitación Empresarial</option>
+            <option value="Soporte Legal y Tributario">Soporte Legal y Tributario</option>
+          </select>
+        </div>
+        <div>
+          <label for="descripcionSolicitud">Descripción:</label>
+          <textarea id="descripcionSolicitud" placeholder="Descripción detallada de la solicitud"></textarea>
+        </div>
+        <div>
+          <label for="correoSolicitud">Correo:</label>
+          <input type="email" id="correoSolicitud" placeholder="correo@ejemplo.com">
+        </div>
+        <div>
+          <label for="estadoSolicitud">Estado:</label>
+          <select id="estadoSolicitud">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En proceso">En proceso</option>
+            <option value="Ejecutada">Ejecutada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+        <div>
+          <label for="fechaCreacion">Fecha Creación:</label>
+          <input type="date" id="fechaCreacion" readonly>
+        </div>
+        <div>
+          <label for="fechaRespuesta">Fecha de Respuesta:</label>
+          <input type="date" id="fechaRespuesta">
+        </div>
+      </div>
+
+      <div class="file-upload">
+        <h3>Subir documentos para esta solicitud</h3>
+        <input type="file" id="documentoSolicitud" name="documentoSolicitud">
+        <button onclick="subirDocumento()">Subir Documento</button>
+        <div id="mensajeSubida"></div>
+        <div id="archivosSubidos"></div>
+      </div>
+      
+      <div class="botones">
+        <button id="btnGuardar" class="guardar" onclick="guardarSolicitud()" disabled>Guardar</button>
+      </div>
+
+      <div class="tabla-tareas">
+        <h3>TABLA: Tareas (asociadas a la solicitud)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID Solicitud</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Fecha Creación</th>
+              <th>Fecha de Respuesta</th>
+              <th>Acciones</th>
+              <th>Documento Subido</th>
+              <th>Solución/Respuesta</th>
+            </tr>
+          </thead>
+          <tbody id="tablaTareas">
+            <!-- Las tareas se agregarán dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <p><a href="../index.html" class="btn">Volver al inicio</a></p>
+
+    <footer>
+      <p>&copy; 2025 CAVE-U</p>
+    </footer>
+  </div>
+
+  <script>
+    // Variables globales
+    let documentosSubidos = [];
+    let esEdicion = false;
+    let solicitudActual = null;
+
+    window.onload = function() {
+      // Verificar si estamos editando una solicitud existente
+      const idSolicitudPrevia = localStorage.getItem('solicitudActual');
+      if (idSolicitudPrevia) {
+        // Intentar cargar la solicitud desde localStorage
+        const solicitudes = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+        solicitudActual = solicitudes.find(sol => sol.idSolicitud === idSolicitudPrevia);
+        
+        if (solicitudActual) {
+          esEdicion = true;
+          cargarDatosSolicitud(solicitudActual);
+        } else {
+          generarNuevoIdSolicitud();
+        }
+        
+        // Limpiar el ID de la solicitud actual después de cargarla
+        localStorage.removeItem('solicitudActual');
+      } else {
+        generarNuevoIdSolicitud();
+      }
+
+      configurarValidacionFormulario();
+      actualizarListaArchivos();
+    };
+
+    function cargarDatosSolicitud(solicitud) {
+      document.getElementById('idSolicitud').textContent = solicitud.idSolicitud;
+      document.getElementById('tipoSolicitud').value = solicitud.tipoSolicitud;
+      document.getElementById('descripcionSolicitud').value = solicitud.descripcion;
+      document.getElementById('correoSolicitud').value = solicitud.correo;
+      document.getElementById('estadoSolicitud').value = solicitud.estado;
+      document.getElementById('fechaCreacion').value = solicitud.fechaCreacion;
+      
+      if (solicitud.fechaRespuesta) {
+        document.getElementById('fechaRespuesta').value = solicitud.fechaRespuesta;
+      }
+      
+      if (solicitud.documentos && solicitud.documentos.length > 0) {
+        documentosSubidos = solicitud.documentos;
+        actualizarListaArchivos();
+      }
+      
+      // Actualizar tabla de tareas si existen
+      if (solicitud.tareas && solicitud.tareas.length > 0) {
+        const tablaTareas = document.getElementById('tablaTareas');
+        tablaTareas.innerHTML = '';
+        
+        solicitud.tareas.forEach(tarea => {
+          const nuevaFila = document.createElement('tr');
+          nuevaFila.id = `tarea-${Date.now()}`;
+          
+          nuevaFila.innerHTML = `
+            <td>${solicitud.idSolicitud}</td>
+            <td>${tarea.descripcion}</td>
+            <td>${tarea.estado}</td>
+            <td>${tarea.fechaCreacion}</td>
+            <td>${tarea.fechaRespuesta || '-'}</td>
+            <td><button class="btn-eliminar" onclick="eliminarTarea('${nuevaFila.id}')">Eliminar</button></td>
+            <td>${tarea.documento || '-'}</td>
+            <td><span class="${tarea.estado.toLowerCase().replace(' ', '-')}">${tarea.solucion || 'Pendiente'}</span></td>
+          `;
+          
+          tablaTareas.appendChild(nuevaFila);
+        });
+      }
+      
+      // Habilitar el botón de guardar ya que estamos editando
+      document.getElementById("btnGuardar").disabled = false;
+    }
+
+    function generarNuevoIdSolicitud() {
+      const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000;
+      const fechaActual = new Date();
+      const anio = fechaActual.getFullYear();
+      const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+      const idSolicitud = `SOL-${anio}-${mes}-${numeroAleatorio}`;
+
+      document.getElementById('idSolicitud').textContent = idSolicitud;
+
+      const fechaCreacionInput = document.getElementById('fechaCreacion');
+      fechaCreacionInput.value = fechaActual.toISOString().split('T')[0];
+    }
+
+    function configurarValidacionFormulario() {
+      const camposObligatorios = [
+        document.getElementById("tipoSolicitud"),
+        document.getElementById("descripcionSolicitud"),
+        document.getElementById("correoSolicitud")
+      ];
+
+      function verificarFormulario() {
+        const todosCompletos = camposObligatorios.every(campo => {
+          return campo.value.trim() !== "" &&
+                 (campo.id !== "tipoSolicitud" || campo.value !== "");
+        });
+
+        document.getElementById("btnGuardar").disabled = !todosCompletos;
+      }
+
+      camposObligatorios.forEach(campo => {
+        campo.addEventListener("input", verificarFormulario);
+        campo.addEventListener("change", verificarFormulario);
+      });
+    }
+
+    function guardarSolicitud() {
+      const idSolicitud = document.getElementById("idSolicitud").textContent;
+      const tipoSolicitud = document.getElementById("tipoSolicitud").value;
+      const descripcion = document.getElementById("descripcionSolicitud").value;
+      const correo = document.getElementById("correoSolicitud").value;
+      const estado = document.getElementById("estadoSolicitud").value;
+      const fechaCreacion = document.getElementById("fechaCreacion").value;
+      const fechaRespuesta = document.getElementById("fechaRespuesta").value;
+
+      if (!tipoSolicitud || !descripcion || !correo) {
+        alert('Por favor complete los campos obligatorios: Tipo de Solicitud, Descripción y Correo.');
+        return;
+      }
+      
+      // Recopilar tareas asociadas a esta solicitud
+      const tablaTareas = document.getElementById('tablaTareas');
+      const filasTabla = tablaTareas.querySelectorAll('tr');
+      const tareas = [];
+      
+      filasTabla.forEach(fila => {
+        const celdas = fila.cells;
+        if (celdas && celdas.length > 0) {
+          tareas.push({
+            descripcion: celdas[1].textContent,
+            estado: celdas[2].textContent,
+            fechaCreacion: celdas[3].textContent,
+            fechaRespuesta: celdas[4].textContent !== '-' ? celdas[4].textContent : '',
+            documento: celdas[6].textContent !== '-' ? celdas[6].textContent : '',
+            solucion: celdas[7].querySelector('span').textContent !== 'Pendiente' ? celdas[7].querySelector('span').textContent : ''
+          });
+        }
+      });
+
+      // Crear objeto de solicitud
+      const solicitud = {
+        idSolicitud,
+        tipoSolicitud,
+        descripcion,
+        correo,
+        estado,
+        fechaCreacion,
+        fechaRespuesta,
+        documentos: documentosSubidos,
+        tareas,
+        fechaModificacion: new Date().toISOString()
+      };
+
+      // Guardar en localStorage
+      guardarSolicitudDetalle(solicitud);
+
+      alert('Solicitud guardada exitosamente.');
+      
+      // Actualizar tabla de tareas
+      actualizarTablaTareas(idSolicitud, tipoSolicitud, descripcion, estado, fechaCreacion, fechaRespuesta);
+      
+      // Opcional: redireccionar a la página de ejecución
+      if (!esEdicion) {
+        // Solo redireccionar si es una nueva solicitud
+        setTimeout(() => {
+          window.location.href = 'ejecucion.html';
+        }, 1000);
+      }
+    }
+
+    function guardarSolicitudDetalle(solicitud) {
+      // Obtener solicitudes existentes
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      
+      // Verificar si ya existe la solicitud para actualizarla
+      const index = solicitudesGuardadas.findIndex(sol => sol.idSolicitud === solicitud.idSolicitud);
+      
+      if (index !== -1) {
+        // Actualizar solicitud existente
+        solicitudesGuardadas[index] = solicitud;
+      } else {
+        // Agregar nueva solicitud
+        solicitudesGuardadas.push(solicitud);
+      }
+      
+        // Guardar en localStorage
+      localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesGuardadas));
+      
+      // Actualizar también en el almacenamiento de ejecución para mantener sincronizado
+      actualizarSolicitudEnEjecucion(solicitud);
+    }
+
+    function actualizarSolicitudEnEjecucion(solicitud) {
+      // Obtener solicitudes de ejecución existentes
+      const solicitudesEjecucion = JSON.parse(localStorage.getItem('solicitudesEjecucion')) || [];
+      
+      // Verificar si ya existe la solicitud para actualizarla
+      const index = solicitudesEjecucion.findIndex(sol => sol.idSolicitud === solicitud.idSolicitud);
+      
+      if (index !== -1) {
+        // Actualizar los campos relevantes para la ejecución
+        solicitudesEjecucion[index].estado = solicitud.estado;
+        solicitudesEjecucion[index].fechaRespuesta = solicitud.fechaRespuesta;
+        solicitudesEjecucion[index].tipoSolicitud = solicitud.tipoSolicitud;
+        solicitudesEjecucion[index].descripcion = solicitud.descripcion;
+        solicitudesEjecucion[index].correo = solicitud.correo;
+      } else {
+        // Agregar versión simplificada para la vista de ejecución
+        solicitudesEjecucion.push({
+          idSolicitud: solicitud.idSolicitud,
+          tipoSolicitud: solicitud.tipoSolicitud,
+          descripcion: solicitud.descripcion,
+          correo: solicitud.correo,
+          estado: solicitud.estado,
+          fechaCreacion: solicitud.fechaCreacion,
+          fechaRespuesta: solicitud.fechaRespuesta
+        });
+      }
+      
+      // Guardar en localStorage
+      localStorage.setItem('solicitudesEjecucion', JSON.stringify(solicitudesEjecucion));
+    }
+    
+    function actualizarTablaTareas(idSolicitud, tipoSolicitud, descripcion, estado, fechaCreacion, fechaRespuesta) {
+      // Si no hay tareas existentes, crear una tarea inicial
+      const tablaTareas = document.getElementById('tablaTareas');
+      if (tablaTareas.children.length === 0) {
+        const nuevaFila = document.createElement('tr');
+        nuevaFila.id = `tarea-${Date.now()}`;
+        
+        nuevaFila.innerHTML = `
+          <td>${idSolicitud}</td>
+          <td>Revisión inicial de ${tipoSolicitud}</td>
+          <td>Pendiente</td>
+          <td>${fechaCreacion}</td>
+          <td>-</td>
+          <td><button class="btn-eliminar" onclick="eliminarTarea('${nuevaFila.id}')">Eliminar</button></td>
+          <td>-</td>
+          <td><span class="pendiente">Pendiente</span></td>
+        `;
+        
+        tablaTareas.appendChild(nuevaFila);
+      }
+    }
+    
+    function subirDocumento() {
+      const input = document.getElementById('documentoSolicitud');
+      const mensajeSubida = document.getElementById('mensajeSubida');
+      
+      if (!input.files || input.files.length === 0) {
+        mensajeSubida.innerHTML = '<p class="error">Por favor seleccione un archivo para subir.</p>';
+        return;
+      }
+      
+      const archivo = input.files[0];
+      // En un entorno real, aquí iría el código para subir el archivo al servidor
+      // Para esta simulación, simplemente almacenamos la información del archivo
+      
+      const nuevoDocumento = {
+        nombre: archivo.name,
+        tipo: archivo.type,
+        tamaño: `${(archivo.size / 1024).toFixed(2)} KB`,
+        fechaSubida: new Date().toISOString()
+      };
+      
+      documentosSubidos.push(nuevoDocumento);
+      
+      // Mostrar mensaje de éxito
+      mensajeSubida.innerHTML = '<p class="exito">Documento subido correctamente.</p>';
+      
+      // Actualizar lista de archivos
+      actualizarListaArchivos();
+      
+      // Limpiar input de archivo
+      input.value = '';
+    }
+    
+    function actualizarListaArchivos() {
+      const contenedorArchivos = document.getElementById('archivosSubidos');
+      
+      if (documentosSubidos.length === 0) {
+        contenedorArchivos.innerHTML = '<p>No hay documentos subidos.</p>';
+        return;
+      }
+      
+      let html = '<h4>Documentos Subidos:</h4><ul>';
+      
+      documentosSubidos.forEach((doc, index) => {
+        html += `
+          <li>
+            ${doc.nombre} (${doc.tamaño})
+            <button class="btn-eliminar-pequeño" onclick="eliminarDocumento(${index})">×</button>
+          </li>
+        `;
+      });
+      
+      html += '</ul>';
+      contenedorArchivos.innerHTML = html;
+    }
+    
+    function eliminarDocumento(index) {
+      if (confirm('¿Está seguro de que desea eliminar este documento?')) {
+        documentosSubidos.splice(index, 1);
+        actualizarListaArchivos();
+      }
+    }
+    
+    function eliminarTarea(idFila) {
+      if (confirm('¿Está seguro de que desea eliminar esta tarea?')) {
+        const fila = document.getElementById(idFila);
+        if (fila) {
+          fila.remove();
+        }
+      }
+    }
+  </script>
+</body>
+</html>

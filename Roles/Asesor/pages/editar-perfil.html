@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil - CAVE-U</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="catalogo.html">Catálogo</a></li>
+                    <li><a href="registro.html">Registro</a></li>
+                    <li><a href="perfil.html" class="active">Perfil</a></li>
+                    <li><a href="ejecucion.html">Ejecución</a></li>
+                    <li><a href="solicitudes.html">Solicitudes</a></li>
+                    <li><a href="notificaciones.html">Notificaciones</a></li>
+                    <li><a href="ayuda.html">Ayuda</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="container">
+            <main>
+                <section class="page-content">
+                    <h2>Editar Perfil</h2>
+                    
+                    <form id="edit-profile-form" action="perfil.html" method="post">
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo:</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="correo">Correo Electrónico:</label>
+                            <input type="email" id="correo" name="correo" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rol">Rol:</label>
+                            <select id="rol" name="rol" required>
+                                <option value="empresario">Empresario</option>
+                                <option value="estudiante">Estudiante</option>
+                                <option value="docente">Docente</option>
+                                <option value="administrativo">Administrativo</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="telefono">Teléfono:</label>
+                            <input type="text" id="telefono" name="telefono">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ciudad">Ciudad:</label>
+                            <input type="text" id="ciudad" name="ciudad">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="area">Área de Interés:</label>
+                            <select id="area" name="area">
+                                <option value="legal">Asesoría Legal</option>
+                                <option value="finanzas">Finanzas</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="rrhh">Recursos Humanos</option>
+                                <option value="tecnologia">Tecnología</option>
+                                <option value="operaciones">Operaciones</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Contraseña (dejar en blanco si no desea cambiarla):</label>
+                            <input type="password" id="password" name="password">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password_confirm">Confirmar Contraseña:</label>
+                            <input type="password" id="password_confirm" name="password_confirm">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bio">Biografía:</label>
+                            <textarea id="bio" name="bio" rows="4" placeholder="Cuéntanos un poco sobre ti..."></textarea>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="submit" class="btn primary">Guardar Cambios</button>
+                            <a href="perfil.html" class="btn secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </section>
+            </main>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 CAVE-U</p>
+        </footer>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script>
+        // Cargar datos del perfil almacenados en localStorage al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intentar obtener datos de usuario guardados
+            const userData = JSON.parse(localStorage.getItem('userData')) || {
+                nombre: 'Juan Pérez',
+                correo: 'juanperez@ejemplo.com',
+                rol: 'empresario',
+                telefono: '+57 310 123 4567',
+                ciudad: 'Bogotá',
+                area: 'legal',
+                bio: ''
+            };
+            
+            // Rellenar el formulario con los datos guardados
+            document.getElementById('nombre').value = userData.nombre;
+            document.getElementById('correo').value = userData.correo;
+            document.getElementById('rol').value = userData.rol;
+            document.getElementById('telefono').value = userData.telefono;
+            document.getElementById('ciudad').value = userData.ciudad;
+            document.getElementById('area').value = userData.area;
+            document.getElementById('bio').value = userData.bio || '';
+            
+            // No rellenamos campos de contraseña por seguridad
+        });
+
+        // Validación del formulario y guardado de datos
+        document.getElementById('edit-profile-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevenir envío tradicional del formulario
+            
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password_confirm').value;
+            
+            // Validar contraseñas si se intenta cambiar
+            if (password !== '' && password !== passwordConfirm) {
+                alert('Las contraseñas no coinciden. Por favor, inténtelo de nuevo.');
+                return;
+            }
+            
+            // Recoger datos del formulario
+            const userData = {
+                nombre: document.getElementById('nombre').value,
+                correo: document.getElementById('correo').value,
+                rol: document.getElementById('rol').value,
+                telefono: document.getElementById('telefono').value,
+                ciudad: document.getElementById('ciudad').value,
+                area: document.getElementById('area').value,
+                bio: document.getElementById('bio').value
+            };
+            
+            // Si se ha introducido una nueva contraseña, guardarla (en un sistema real esto se haría de forma segura)
+            if (password !== '') {
+                userData.passwordHash = btoa(password); // Esto NO es seguro, es solo para demostración
+            } else if (localStorage.getItem('userData')) {
+                // Mantener la contraseña anterior si existe
+                const oldData = JSON.parse(localStorage.getItem('userData'));
+                if (oldData.passwordHash) {
+                    userData.passwordHash = oldData.passwordHash;
+                }
+            }
+            
+            // Guardar datos en localStorage
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Mostrar mensaje de éxito
+            alert('Perfil actualizado correctamente');
+            
+            // Redirigir a la página de perfil
+            window.location.href = 'perfil.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle de la Solicitud - CAVE-U</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+    </header>
+
+    <main>
+      <a href="inicio.html" class="volver">← Volver al Inicio</a>
+      <a href="ejecucion.html" class="volver">← Volver a Ejecución del Servicio</a>
+
+      <h2>ADV Detalles de la solicitud</h2>
+      <div class="detalle-solicitud">
+        <div>
+          <label for="idSolicitud">ID Solicitud:</label>
+          <span id="idSolicitud" class="id-solicitud">SOL-2025-</span>
+        </div>
+        <div>
+          <label for="tipoSolicitud">Tipo de Solicitud:</label>
+          <select id="tipoSolicitud">
+            <option value="">-- Seleccione un tipo de solicitud --</option>
+            <option value="Asesoría Contable">Asesoría Contable</option>
+            <option value="Consultoría Administrativa">Consultoría Administrativa</option>
+            <option value="Capacitación Empresarial">Capacitación Empresarial</option>
+            <option value="Soporte Legal y Tributario">Soporte Legal y Tributario</option>
+          </select>
+        </div>
+        <div>
+          <label for="descripcionSolicitud">Descripción:</label>
+          <textarea id="descripcionSolicitud" placeholder="Descripción detallada de la solicitud"></textarea>
+        </div>
+        <div>
+          <label for="correoSolicitud">Correo:</label>
+          <input type="email" id="correoSolicitud" placeholder="correo@ejemplo.com">
+        </div>
+        <div>
+          <label for="estadoSolicitud">Estado:</label>
+          <select id="estadoSolicitud">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En proceso">En proceso</option>
+            <option value="Ejecutada">Ejecutada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+        <div>
+          <label for="fechaCreacion">Fecha Creación:</label>
+          <input type="date" id="fechaCreacion" readonly>
+        </div>
+        <div>
+          <label for="fechaRespuesta">Fecha de Respuesta:</label>
+          <input type="date" id="fechaRespuesta">
+        </div>
+      </div>
+
+      <div class="file-upload">
+        <h3>Subir documentos para esta solicitud</h3>
+        <input type="file" id="documentoSolicitud" name="documentoSolicitud">
+        <button onclick="subirDocumento()">Subir Documento</button>
+        <div id="mensajeSubida"></div>
+      </div>
+      
+      <div class="botones">
+        <button id="btnGuardar" class="guardar" onclick="guardarSolicitud()" disabled>Guardar</button>
+      </div>
+
+      <div class="tabla-tareas">
+        <h3>TABLA: Tareas (asociadas a la solicitud)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID Solicitud</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Fecha Creación</th>
+              <th>Fecha de Respuesta</th>
+              <th>Acciones</th>
+              <th>Documento Subido</th>
+              <th>Solución/Respuesta</th>
+            </tr>
+          </thead>
+          <tbody id="tablaTareas">
+            <!-- Las tareas se agregarán dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <p><a href="../index.html" class="btn">Volver al inicio</a></p>
+
+    <footer>
+      <p>&copy; 2025 CAVE-U</p>
+    </footer>
+  </div>
+
+  <script>
+    window.onload = function() {
+      const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000;
+      const fechaActual = new Date();
+      const anio = fechaActual.getFullYear();
+      const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+      const idSolicitud = `SOL-${anio}-${mes}-${numeroAleatorio}`;
+
+      document.getElementById('idSolicitud').textContent = idSolicitud;
+
+      const fechaCreacionInput = document.getElementById('fechaCreacion');
+      fechaCreacionInput.value = fechaActual.toISOString().split('T')[0];
+
+      configurarValidacionFormulario();
+    };
+
+    function configurarValidacionFormulario() {
+      const camposObligatorios = [
+        document.getElementById("tipoSolicitud"),
+        document.getElementById("descripcionSolicitud"),
+        document.getElementById("correoSolicitud")
+      ];
+
+      function verificarFormulario() {
+        const todosCompletos = camposObligatorios.every(campo => {
+          return campo.value.trim() !== "" &&
+                 (campo.id !== "tipoSolicitud" || campo.value !== "");
+        });
+
+        document.getElementById("btnGuardar").disabled = !todosCompletos;
+      }
+
+      camposObligatorios.forEach(campo => {
+        campo.addEventListener("input", verificarFormulario);
+        campo.addEventListener("change", verificarFormulario);
+      });
+    }
+
+    function guardarSolicitud() {
+      const idSolicitud = document.getElementById("idSolicitud").textContent;
+      const tipoSolicitud = document.getElementById("tipoSolicitud").value;
+      const descripcion = document.getElementById("descripcionSolicitud").value;
+      const correo = document.getElementById("correoSolicitud").value;
+      const estado = document.getElementById("estadoSolicitud").value;
+      const fechaCreacion = document.getElementById("fechaCreacion").value;
+      const fechaRespuesta = document.getElementById("fechaRespuesta").value;
+
+      if (!tipoSolicitud || !descripcion || !correo) {
+        alert('Por favor complete los campos obligatorios: Tipo de Solicitud, Descripción y Correo.');
+        return;
+      }
+
+      actualizarTablaTareas(idSolicitud, tipoSolicitud, descripcion, estado, fechaCreacion, fechaRespuesta);
+
+      alert('Solicitud guardada exitosamente.');
+    }
+
+    function actualizarTablaTareas(idSolicitud, tipoSolicitud, descripcion, estado, fechaCreacion, fechaRespuesta) {
+      const tablaTareas = document.getElementById('tablaTareas');
+
+      const filaExistente = Array.from(tablaTareas.querySelectorAll('tr')).find(
+        fila => fila.cells[0].textContent === idSolicitud && fila.classList.contains('fila-principal')
+      );
+
+      if (filaExistente) {
+        filaExistente.cells[1].textContent = `${tipoSolicitud}: ${descripcion}`;
+        filaExistente.cells[2].textContent = estado;
+        filaExistente.cells[3].textContent = fechaCreacion;
+        filaExistente.cells[4].textContent = fechaRespuesta || '-';
+      } else {
+        const nuevaFila = document.createElement('tr');
+        nuevaFila.id = `solicitud-${Date.now()}`;
+        nuevaFila.classList.add('fila-principal');
+
+        nuevaFila.innerHTML = `
+          <td>${idSolicitud}</td>
+          <td>${tipoSolicitud}: ${descripcion}</td>
+          <td>${estado}</td>
+          <td>${fechaCreacion}</td>
+          <td>${fechaRespuesta || '-'}</td>
+          <td><button class="btn-eliminar" onclick="eliminarTarea('${nuevaFila.id}')">Eliminar</button></td>
+          <td>-</td>
+          <td><span class="en-proceso">Pendiente</span></td>
+        `;
+
+        tablaTareas.appendChild(nuevaFila);
+      }
+    }
+
+    function eliminarTarea(idFila) {
+      if (confirm("¿Estás seguro de que deseas eliminar esta tarea? Esta acción no se puede deshacer.")) {
+        const fila = document.getElementById(idFila);
+        if (fila) {
+          fila.remove();
+          alert("Tarea eliminada correctamente.");
+        }
+      }
+    }
+
+    function subirDocumento() {
+      const fileInput = document.getElementById('documentoSolicitud');
+      const mensajeDiv = document.getElementById('mensajeSubida');
+      const idSolicitud = document.getElementById("idSolicitud").textContent;
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        mensajeDiv.innerHTML = '<p style="color: red;">Por favor seleccione un archivo para subir.</p>';
+        return;
+      }
+
+      const fileName = fileInput.files[0].name;
+
+      mensajeDiv.innerHTML = '<p style="color: blue;">Subiendo archivo...</p>';
+
+      setTimeout(() => {
+        mensajeDiv.innerHTML = `<p style="color: green;">El archivo "${fileName}" se ha subido correctamente.</p>`;
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

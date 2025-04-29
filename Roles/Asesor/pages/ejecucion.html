@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consultorio Académico Virtual Empresarial Uniminuto - Ejecución del Servicio</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="registro.html">Registro</a></li>
+          <li><a href="perfil.html">Perfil</a></li>
+          <li><a href="ejecucion.html" class="active">Ejecución</a></li>
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+          <li><a href="notificaciones.html">Notificaciones</a></li>
+          <li><a href="ayuda.html">Ayuda</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="container">
+      <main>
+        <!-- Sección para identificación del usuario/asesor -->
+        <div class="filter-section">
+          <h3>Panel de Asesor</h3>
+          <div class="filter-controls">
+            <label for="nombreAsesor">Tu nombre:</label>
+            <input type="text" id="nombreAsesor" placeholder="Ingresa tu nombre">
+            <button onclick="guardarNombreAsesor()">Guardar</button>
+            <span id="asesorActual"></span>
+            <button onclick="mostrarMisSolicitudes()" style="margin-left: 15px;">Ver mis solicitudes</button>
+            <button onclick="mostrarTodasSolicitudes()">Ver todas</button>
+          </div>
+        </div>
+        
+        <!-- Sección para Solicitudes -->
+        <div class="section">
+          <h2>Solicitudes en Curso</h2>
+          <div id="noSolicitudes" class="no-solicitudes" style="display: none;">
+            <p>No hay solicitudes asignadas a ti en este momento.</p>
+          </div>
+          <table id="solicitudes">
+            <thead>
+              <tr>
+                <th>ID Solicitud</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Fecha Creación</th>
+                <th>Fecha Respuesta</th>
+                <th>Asesor</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Aquí se cargarán dinámicamente las solicitudes -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mover aquí el botón "Volver al inicio" -->
+        <a href="../index.html" class="volver">← Volver al inicio</a>
+      </main>      
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 CAVE-U</p>
+  </footer>
+
+  <script>
+    // Variables globales
+    let asesorActual = '';
+    
+    // Cargar datos guardados al iniciar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      cargarTablasGuardadas();
+      cargarSolicitudesGuardadas();
+      cargarNombreAsesor();
+    });
+    
+    // Función para guardar el nombre del asesor en localStorage
+    function guardarNombreAsesor() {
+      const nombreInput = document.getElementById('nombreAsesor');
+      const nombre = nombreInput.value.trim();
+      
+      if (!nombre) {
+        alert('Por favor, ingresa tu nombre de asesor');
+        return;
+      }
+      
+      // Guardar en localStorage
+      localStorage.setItem('asesorActual', nombre);
+      asesorActual = nombre;
+      
+      // Actualizar la interfaz
+      document.getElementById('asesorActual').textContent = `Asesor actual: ${nombre}`;
+      nombreInput.value = '';
+      
+      // Actualizar vista
+      mostrarMisSolicitudes();
+    }
+    
+    // Función para cargar el nombre del asesor desde localStorage
+    function cargarNombreAsesor() {
+      const nombreGuardado = localStorage.getItem('asesorActual');
+      if (nombreGuardado) {
+        asesorActual = nombreGuardado;
+        document.getElementById('asesorActual').textContent = `Asesor actual: ${nombreGuardado}`;
+      }
+    }
+    
+    // Función para mostrar solo las solicitudes asignadas al asesor actual
+    function mostrarMisSolicitudes() {
+      if (!asesorActual) {
+        alert('Por favor, ingresa tu nombre de asesor primero');
+        return;
+      }
+      
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      const tablaSolicitudes = document.getElementById('solicitudes').getElementsByTagName('tbody')[0];
+      tablaSolicitudes.innerHTML = '';
+      
+      const misSolicitudes = solicitudesGuardadas.filter(solicitud => 
+        solicitud.asesor && solicitud.asesor.toLowerCase() === asesorActual.toLowerCase()
+      );
+      
+      if (misSolicitudes.length === 0) {
+        document.getElementById('noSolicitudes').style.display = 'block';
+        document.getElementById('solicitudes').style.display = 'none';
+      } else {
+        document.getElementById('noSolicitudes').style.display = 'none';
+        document.getElementById('solicitudes').style.display = 'table';
+        
+        misSolicitudes.forEach(solicitud => {
+          agregarFilaSolicitud(solicitud, tablaSolicitudes, true);
+        });
+      }
+    }
+    
+    // Función para mostrar todas las solicitudes
+    function mostrarTodasSolicitudes() {
+      cargarSolicitudesGuardadas();
+    }
+    
+    function cargarTablasGuardadas() {
+      // Intentar cargar tareas guardadas
+      const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
+      
+      // Comprobar si el elemento existe antes de intentar usarlo
+      const elementoTareas = document.getElementById('tareas');
+      if (elementoTareas) {
+        const tablasTareas = elementoTareas.getElementsByTagName('tbody')[0];
+        tablasTareas.innerHTML = '';
+        
+        tareasGuardadas.forEach(tarea => {
+          const fila = tablasTareas.insertRow();
+          
+          // Añadir celdas con los datos
+          const celdaDesc = fila.insertCell();
+          celdaDesc.textContent = tarea.descripcion;
+          
+          const celdaEstado = fila.insertCell();
+          celdaEstado.textContent = tarea.estado;
+          
+          const celdaResp = fila.insertCell();
+          celdaResp.textContent = tarea.responsable;
+          
+          const celdaFecha = fila.insertCell();
+          celdaFecha.textContent = tarea.fecha;
+          
+          // Añadir botones de acción
+          const celdaAcciones = fila.insertCell();
+          celdaAcciones.innerHTML = `
+            <button onclick="editarFila(this, 'tareas')">Editar</button>
+            <button onclick="eliminarFila(this, 'tareas', ${tarea.id})">Eliminar</button>
+          `;
+        });
+      }
+      
+      // Intentar cargar informes guardados
+      const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
+      
+      // Comprobar si el elemento existe antes de intentar usarlo
+      const elementoInformes = document.getElementById('informes');
+      if (elementoInformes) {
+        const tablasInformes = elementoInformes.getElementsByTagName('tbody')[0];
+        tablasInformes.innerHTML = '';
+        
+        informesGuardados.forEach(informe => {
+          const fila = tablasInformes.insertRow();
+          
+          // Añadir celdas con los datos
+          const celdaTitulo = fila.insertCell();
+          celdaTitulo.textContent = informe.titulo;
+          
+          const celdaDesc = fila.insertCell();
+          celdaDesc.textContent = informe.descripcion;
+          
+          const celdaArchivo = fila.insertCell();
+          celdaArchivo.textContent = informe.archivo;
+          
+          const celdaFecha = fila.insertCell();
+          celdaFecha.textContent = informe.fecha;
+          
+          // Añadir botones de acción
+          const celdaAcciones = fila.insertCell();
+          celdaAcciones.innerHTML = `
+            <button onclick="editarFila(this, 'informes')">Editar</button>
+            <button onclick="eliminarFila(this, 'informes', ${informe.id})">Eliminar</button>
+          `;
+        });
+      }
+    }
+
+    // Nueva función para cargar solicitudes
+    function cargarSolicitudesGuardadas() {
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      const tablaSolicitudes = document.getElementById('solicitudes').getElementsByTagName('tbody')[0];
+      tablaSolicitudes.innerHTML = '';
+      
+      if (solicitudesGuardadas.length === 0) {
+        document.getElementById('noSolicitudes').style.display = 'block';
+        document.getElementById('solicitudes').style.display = 'none';
+      } else {
+        document.getElementById('noSolicitudes').style.display = 'none';
+        document.getElementById('solicitudes').style.display = 'table';
+        
+        solicitudesGuardadas.forEach(solicitud => {
+          // Verificar si esta solicitud está asignada al asesor actual
+          const esMiAsignacion = asesorActual && 
+                               solicitud.asesor && 
+                               solicitud.asesor.toLowerCase() === asesorActual.toLowerCase();
+          
+          agregarFilaSolicitud(solicitud, tablaSolicitudes, esMiAsignacion);
+        });
+      }
+    }
+    
+    // Función para agregar una fila de solicitud a la tabla
+    function agregarFilaSolicitud(solicitud, tabla, esMiAsignacion) {
+      const fila = tabla.insertRow();
+      
+      // Aplicar clase si es asignación del asesor actual
+      if (esMiAsignacion) {
+        fila.classList.add('mi-asignacion');
+      }
+      
+      // Añadir celdas con los datos
+      const celdaId = fila.insertCell();
+      celdaId.textContent = solicitud.idSolicitud;
+      
+      const celdaTipo = fila.insertCell();
+      celdaTipo.textContent = solicitud.tipoSolicitud;
+      
+      const celdaDesc = fila.insertCell();
+      celdaDesc.textContent = solicitud.descripcion;
+      
+      const celdaEstado = fila.insertCell();
+      celdaEstado.textContent = solicitud.estado;
+      
+      const celdaFechaCreacion = fila.insertCell();
+      celdaFechaCreacion.textContent = solicitud.fechaCreacion;
+      
+      const celdaFechaRespuesta = fila.insertCell();
+      celdaFechaRespuesta.textContent = solicitud.fechaRespuesta || '-';
+      
+      // Celda para mostrar el asesor asignado
+      const celdaAsesor = fila.insertCell();
+      celdaAsesor.textContent = solicitud.asesor || 'Sin asignar';
+      
+      // Añadir botones de acción
+      const celdaAcciones = fila.insertCell();
+      
+      // Si soy el asesor asignado, muestro botones específicos
+      if (esMiAsignacion) {
+        celdaAcciones.innerHTML = `
+          <button onclick="actualizarEstado('${solicitud.idSolicitud}')">Actualizar Estado</button>
+          <button onclick="verDetalleSolicitud('${solicitud.idSolicitud}')">Ver Detalle</button>
+        `;
+      } else {
+        celdaAcciones.innerHTML = `
+          <button onclick="verDetalleSolicitud('${solicitud.idSolicitud}')">Ver Detalle</button>
+        `;
+      }
+    }
+    
+    // Función para actualizar el estado de una solicitud
+    function actualizarEstado(idSolicitud) {
+      const nuevoEstado = prompt("Ingrese el nuevo estado de la solicitud:", "En progreso");
+      
+      if (nuevoEstado) {
+        // Actualizar en localStorage
+        const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+        const solicitudIndex = solicitudesGuardadas.findIndex(sol => sol.idSolicitud === idSolicitud);
+        
+        if (solicitudIndex !== -1) {
+          // Actualizar estado
+          solicitudesGuardadas[solicitudIndex].estado = nuevoEstado;
+          
+          // Actualizar fecha de respuesta si es necesario
+          if (nuevoEstado.toLowerCase() === 'completado' || nuevoEstado.toLowerCase() === 'completada') {
+            solicitudesGuardadas[solicitudIndex].fechaRespuesta = new Date().toLocaleDateString();
+          }
+          
+          localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesGuardadas));
+          
+          // Recargar la vista
+          if (document.getElementById('solicitudes').style.display !== 'none') {
+            mostrarMisSolicitudes();
+          } else {
+            cargarSolicitudesGuardadas();
+          }
+          
+          alert(`Estado de la solicitud #${idSolicitud} actualizado a "${nuevoEstado}"`);
+        }
+      }
+    }
+
+    // Función para ver detalle de solicitud
+    function verDetalleSolicitud(idSolicitud) {
+      // Guardar el ID para recuperarlo en la página de detalle
+      localStorage.setItem('solicitudActual', idSolicitud);
+      window.location.href = 'detalle-solicitud.html';
+    }
+
+    function eliminarFila(boton, tablaId, id) {
+      const fila = boton.closest('tr');
+      const filaIndex = fila.rowIndex - 1; // Restar 1 por el encabezado
+      
+      if (tablaId === "tareas") {
+        // Eliminar de localStorage
+        const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
+        if (id && tareasGuardadas.length > 0) {
+          const nuevasTareas = tareasGuardadas.filter(tarea => tarea.id !== id);
+          localStorage.setItem('tareas', JSON.stringify(nuevasTareas));
+        }
+      } else if (tablaId === "informes") {
+        // Eliminar de localStorage
+        const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
+        if (id && informesGuardados.length > 0) {
+          const nuevosInformes = informesGuardados.filter(informe => informe.id !== id);
+          localStorage.setItem('informes', JSON.stringify(nuevosInformes));
+        }
+      }
+      
+      // Eliminar fila de la tabla
+      fila.remove();
+    }
+
+    function guardarEnLocalStorage(solicitud) {
+      const solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+      solicitudes.push(solicitud);
+      localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
+    }
+
+    // Función para generar datos de prueba (solo para desarrollo)
+    function generarDatosDePrueba() {
+      const solicitudesDePrueba = [
+        {
+          idSolicitud: "SOL001",
+          tipoSolicitud: "Asesoría Contable",
+          descripcion: "Consulta sobre declaración de renta persona natural",
+          estado: "Pendiente",
+          fechaCreacion: "25/04/2025",
+          fechaRespuesta: "",
+          asesor: "María Rodríguez"
+        },
+        {
+          idSolicitud: "SOL002",
+          tipoSolicitud: "Asesoría Jurídica",
+          descripcion: "Revisión de contrato de arrendamiento",
+          estado: "En progreso",
+          fechaCreacion: "26/04/2025",
+          fechaRespuesta: "",
+          asesor: "Carlos Pérez"
+        },
+        {
+          idSolicitud: "SOL003",
+          tipoSolicitud: "Consultoría de Marketing",
+          descripcion: "Estrategia de redes sociales para emprendimiento",
+          estado: "Pendiente",
+          fechaCreacion: "27/04/2025",
+          fechaRespuesta: "",
+          asesor: "Juan López"
+        }
+      ];
+      
+      localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesDePrueba));
+      alert('Datos de prueba generados correctamente');
+      cargarSolicitudesGuardadas();
+    }
+    
+    // Descomenta esta línea para generar datos de prueba automáticamente la primera vez
+    // Si no hay datos en localStorage, generamos datos de prueba
+    // if(!localStorage.getItem('solicitudesDetalle')) {
+    //   generarDatosDePrueba();
+    // }
+  </script>
+</body>
+</html>
