@@ -4,6 +4,167 @@
   <meta charset="UTF-8">
   <title>Consultorio Académico Virtual Empresarial Uniminuto - Ejecución del Servicio</title>
   <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    /* Estilos para notificaciones */
+    .notificacion-badge {
+      position: relative;
+      display: inline-block;
+      margin-left: 8px;
+    }
+    
+    .notificacion-badge .badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff4757;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .notificacion-popup {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      background: #f9f9f9;
+      border-left: 4px solid #2980b9;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      padding: 15px;
+      z-index: 1000;
+      animation: slideIn 0.5s ease-in-out;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .notificacion-popup h3 {
+      margin-top: 0;
+      color: #2980b9;
+      font-size: 16px;
+    }
+    
+    .notificacion-popup p {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .notificacion-popup .buttons {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .notificacion-popup button {
+      padding: 5px 10px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    
+    /* Destacado para notificaciones no leídas */
+    tr.notificacion-nueva {
+      background-color: #f0f8ff;
+      font-weight: bold;
+    }
+    
+    tr.notificacion-nueva td:first-child::before {
+      content: "🔔 ";
+      color: #ff4757;
+    }
+    
+    /* Estilos para los nuevos botones */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    
+    .action-buttons button {
+      padding: 5px 8px;
+      font-size: 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .action-buttons button:hover {
+      background-color: #2980b9;
+    }
+    
+    .action-buttons button.download {
+      background-color: #27ae60;
+    }
+    
+    .action-buttons button.download:hover {
+      background-color: #219653;
+    }
+    
+    .action-buttons button.upload {
+      background-color: #f39c12;
+    }
+    
+    .action-buttons button.upload:hover {
+      background-color: #d35400;
+    }
+    
+    /* Estilos para el modal de carga de archivos */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+    
+    .file-upload-container {
+      margin: 15px 0;
+    }
+    
+    .file-upload-btn {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="wrapper">
@@ -17,7 +178,14 @@
           <li><a href="perfil.html">Perfil</a></li>
           <li><a href="ejecucion.html" class="active">Ejecución</a></li>
           <li><a href="solicitudes.html">Solicitudes</a></li>
-          <li><a href="notificaciones.html">Notificaciones</a></li>
+          <li>
+            <a href="notificaciones.html">
+              Notificaciones
+              <span class="notificacion-badge">
+                <span class="badge" id="contador-notificaciones"></span>
+              </span>
+            </a>
+          </li>
           <li><a href="ayuda.html">Ayuda</a></li>
         </ul>
       </nav>
@@ -25,13 +193,17 @@
 
     <div class="container">
       <main>
-        <!-- Sección para identificación del usuario/asesor -->
+        <!-- Sección para identificación del asesor -->
         <div class="filter-section">
           <h3>Panel de Asesor</h3>
           <div class="filter-controls">
             <label for="nombreAsesor">Tu nombre:</label>
             <input type="text" id="nombreAsesor" placeholder="Ingresa tu nombre">
-            <button onclick="guardarNombreAsesor()">Guardar</button>
+            <label for="codigoAsesor">Tu código:</label>
+            <input type="text" id="codigoAsesor" placeholder="Ingresa tu código">
+            <label for="correoAsesor">Tu correo:</label>
+            <input type="email" id="correoAsesor" placeholder="correo@ejemplo.com">
+            <button onclick="guardarDatosAsesor()">Guardar</button>
             <span id="asesorActual"></span>
             <button onclick="mostrarMisSolicitudes()" style="margin-left: 15px;">Ver mis solicitudes</button>
             <button onclick="mostrarTodasSolicitudes()">Ver todas</button>
@@ -69,6 +241,31 @@
     </div>
   </div>
 
+  <!-- Popup de notificación -->
+  <div id="notificacionPopup" class="notificacion-popup">
+    <h3>Nueva Asignación</h3>
+    <p id="notificacionMensaje"></p>
+    <div class="buttons">
+      <button onclick="verSolicitudNotificada()">Ver Solicitud</button>
+      <button onclick="cerrarNotificacion()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal para subir archivos -->
+  <div id="uploadModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModalSubida()">&times;</span>
+      <h3>Subir Solución</h3>
+      <p>Selecciona el archivo con la solución para el cliente:</p>
+      <div class="file-upload-container">
+        <input type="file" id="solucionFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar">
+        <p>Formato permitido: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP, RAR</p>
+      </div>
+      <p id="idSolicitudUpload" style="display: none;"></p>
+      <button class="file-upload-btn" onclick="subirSolucion()">Subir Solución</button>
+    </div>
+  </div>
+
   <footer>
     <p>&copy; 2025 CAVE-U</p>
   </footer>
@@ -76,49 +273,75 @@
   <script>
     // Variables globales
     let asesorActual = '';
+    let codigoAsesorActual = '';
+    let correoAsesorActual = '';
+    let solicitudNotificada = null;
     
     // Cargar datos guardados al iniciar la página
     document.addEventListener('DOMContentLoaded', function() {
       cargarTablasGuardadas();
       cargarSolicitudesGuardadas();
-      cargarNombreAsesor();
+      cargarDatosAsesor();
+      verificarNotificaciones();
+      
+      // Configurar verificación periódica de notificaciones (cada 30 segundos)
+      setInterval(verificarNotificaciones, 30000);
     });
     
-    // Función para guardar el nombre del asesor en localStorage
-    function guardarNombreAsesor() {
+    // Función para guardar los datos del asesor en localStorage
+    function guardarDatosAsesor() {
       const nombreInput = document.getElementById('nombreAsesor');
-      const nombre = nombreInput.value.trim();
+      const codigoInput = document.getElementById('codigoAsesor');
+      const correoInput = document.getElementById('correoAsesor');
       
-      if (!nombre) {
-        alert('Por favor, ingresa tu nombre de asesor');
+      const nombre = nombreInput.value.trim();
+      const codigo = codigoInput.value.trim();
+      const correo = correoInput.value.trim();
+      
+      if (!nombre || !codigo) {
+        alert('Por favor, ingresa tu nombre y código de asesor');
         return;
       }
       
       // Guardar en localStorage
       localStorage.setItem('asesorActual', nombre);
+      localStorage.setItem('codigoAsesorActual', codigo);
+      localStorage.setItem('correoAsesorActual', correo);
+      
       asesorActual = nombre;
+      codigoAsesorActual = codigo;
+      correoAsesorActual = correo;
       
       // Actualizar la interfaz
-      document.getElementById('asesorActual').textContent = `Asesor actual: ${nombre}`;
+      document.getElementById('asesorActual').textContent = `Asesor: ${nombre} (${codigo})`;
       nombreInput.value = '';
+      codigoInput.value = '';
+      correoInput.value = '';
       
       // Actualizar vista
       mostrarMisSolicitudes();
+      verificarNotificaciones();
     }
     
-    // Función para cargar el nombre del asesor desde localStorage
-    function cargarNombreAsesor() {
+    // Función para cargar los datos del asesor desde localStorage
+    function cargarDatosAsesor() {
       const nombreGuardado = localStorage.getItem('asesorActual');
-      if (nombreGuardado) {
+      const codigoGuardado = localStorage.getItem('codigoAsesorActual');
+      const correoGuardado = localStorage.getItem('correoAsesorActual');
+      
+      if (nombreGuardado && codigoGuardado) {
         asesorActual = nombreGuardado;
-        document.getElementById('asesorActual').textContent = `Asesor actual: ${nombreGuardado}`;
+        codigoAsesorActual = codigoGuardado;
+        correoAsesorActual = correoGuardado || '';
+        
+        document.getElementById('asesorActual').textContent = `Asesor: ${nombreGuardado} (${codigoGuardado})`;
       }
     }
     
     // Función para mostrar solo las solicitudes asignadas al asesor actual
     function mostrarMisSolicitudes() {
-      if (!asesorActual) {
-        alert('Por favor, ingresa tu nombre de asesor primero');
+      if (!asesorActual || !codigoAsesorActual) {
+        alert('Por favor, ingresa tu nombre y código de asesor primero');
         return;
       }
       
@@ -127,7 +350,8 @@
       tablaSolicitudes.innerHTML = '';
       
       const misSolicitudes = solicitudesGuardadas.filter(solicitud => 
-        solicitud.asesor && solicitud.asesor.toLowerCase() === asesorActual.toLowerCase()
+        solicitud.asesor && solicitud.asesor.toLowerCase() === asesorActual.toLowerCase() &&
+        solicitud.codigoAsesor && solicitud.codigoAsesor.toLowerCase() === codigoAsesorActual.toLowerCase()
       );
       
       if (misSolicitudes.length === 0) {
@@ -149,76 +373,15 @@
     }
     
     function cargarTablasGuardadas() {
-      // Intentar cargar tareas guardadas
-      const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
-      
-      // Comprobar si el elemento existe antes de intentar usarlo
-      const elementoTareas = document.getElementById('tareas');
-      if (elementoTareas) {
-        const tablasTareas = elementoTareas.getElementsByTagName('tbody')[0];
-        tablasTareas.innerHTML = '';
-        
-        tareasGuardadas.forEach(tarea => {
-          const fila = tablasTareas.insertRow();
-          
-          // Añadir celdas con los datos
-          const celdaDesc = fila.insertCell();
-          celdaDesc.textContent = tarea.descripcion;
-          
-          const celdaEstado = fila.insertCell();
-          celdaEstado.textContent = tarea.estado;
-          
-          const celdaResp = fila.insertCell();
-          celdaResp.textContent = tarea.responsable;
-          
-          const celdaFecha = fila.insertCell();
-          celdaFecha.textContent = tarea.fecha;
-          
-          // Añadir botones de acción
-          const celdaAcciones = fila.insertCell();
-          celdaAcciones.innerHTML = `
-            <button onclick="editarFila(this, 'tareas')">Editar</button>
-            <button onclick="eliminarFila(this, 'tareas', ${tarea.id})">Eliminar</button>
-          `;
-        });
-      }
-      
-      // Intentar cargar informes guardados
-      const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
-      
-      // Comprobar si el elemento existe antes de intentar usarlo
-      const elementoInformes = document.getElementById('informes');
-      if (elementoInformes) {
-        const tablasInformes = elementoInformes.getElementsByTagName('tbody')[0];
-        tablasInformes.innerHTML = '';
-        
-        informesGuardados.forEach(informe => {
-          const fila = tablasInformes.insertRow();
-          
-          // Añadir celdas con los datos
-          const celdaTitulo = fila.insertCell();
-          celdaTitulo.textContent = informe.titulo;
-          
-          const celdaDesc = fila.insertCell();
-          celdaDesc.textContent = informe.descripcion;
-          
-          const celdaArchivo = fila.insertCell();
-          celdaArchivo.textContent = informe.archivo;
-          
-          const celdaFecha = fila.insertCell();
-          celdaFecha.textContent = informe.fecha;
-          
-          // Añadir botones de acción
-          const celdaAcciones = fila.insertCell();
-          celdaAcciones.innerHTML = `
-            <button onclick="editarFila(this, 'informes')">Editar</button>
-            <button onclick="eliminarFila(this, 'informes', ${informe.id})">Eliminar</button>
-          `;
-        });
+      // Cargar tablas guardadas del localStorage para uso interno
+      const solicitudesTable = localStorage.getItem('solicitudesTable');
+      if (solicitudesTable) {
+        // Aquí podríamos precargar alguna información si fuera necesario
+        // pero el trabajo principal lo hacemos en cargarSolicitudesGuardadas()
       }
     }
-
-    // Nueva función para cargar solicitudes
+    
+    // Función para cargar las solicitudes guardadas desde localStorage
     function cargarSolicitudesGuardadas() {
       const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
       const tablaSolicitudes = document.getElementById('solicitudes').getElementsByTagName('tbody')[0];
@@ -232,175 +395,342 @@
         document.getElementById('solicitudes').style.display = 'table';
         
         solicitudesGuardadas.forEach(solicitud => {
-          // Verificar si esta solicitud está asignada al asesor actual
-          const esMiAsignacion = asesorActual && 
-                               solicitud.asesor && 
-                               solicitud.asesor.toLowerCase() === asesorActual.toLowerCase();
-          
-          agregarFilaSolicitud(solicitud, tablaSolicitudes, esMiAsignacion);
+          agregarFilaSolicitud(solicitud, tablaSolicitudes, false);
         });
       }
     }
     
-    // Función para agregar una fila de solicitud a la tabla
-    function agregarFilaSolicitud(solicitud, tabla, esMiAsignacion) {
-      const fila = tabla.insertRow();
+    // Función para agregar una fila a la tabla de solicitudes
+    function agregarFilaSolicitud(solicitud, tabla, soloMias) {
+      const fila = document.createElement('tr');
       
-      // Aplicar clase si es asignación del asesor actual
-      if (esMiAsignacion) {
-        fila.classList.add('mi-asignacion');
+      // Destacar notificaciones nuevas
+      if (solicitud.nuevaNotificacion) {
+        fila.classList.add('notificacion-nueva');
       }
       
-      // Añadir celdas con los datos
-      const celdaId = fila.insertCell();
-      celdaId.textContent = solicitud.idSolicitud;
-      
-      const celdaTipo = fila.insertCell();
-      celdaTipo.textContent = solicitud.tipoSolicitud;
-      
-      const celdaDesc = fila.insertCell();
-      celdaDesc.textContent = solicitud.descripcion;
-      
-      const celdaEstado = fila.insertCell();
-      celdaEstado.textContent = solicitud.estado;
-      
-      const celdaFechaCreacion = fila.insertCell();
-      celdaFechaCreacion.textContent = solicitud.fechaCreacion;
-      
-      const celdaFechaRespuesta = fila.insertCell();
-      celdaFechaRespuesta.textContent = solicitud.fechaRespuesta || '-';
-      
-      // Celda para mostrar el asesor asignado
-      const celdaAsesor = fila.insertCell();
-      celdaAsesor.textContent = solicitud.asesor || 'Sin asignar';
-      
-      // Añadir botones de acción
-      const celdaAcciones = fila.insertCell();
-      
-      // Si soy el asesor asignado, muestro botones específicos
-      if (esMiAsignacion) {
-        celdaAcciones.innerHTML = `
-          <button onclick="actualizarEstado('${solicitud.idSolicitud}')">Actualizar Estado</button>
-          <button onclick="verDetalleSolicitud('${solicitud.idSolicitud}')">Ver Detalle</button>
+      // Si solo estamos mostrando mis solicitudes o si la solicitud no tiene asesor asignado
+      // o si esa solicitud está asignada a mí, mostrarla
+      if (!soloMias || !solicitud.asesor || 
+          (solicitud.asesor.toLowerCase() === asesorActual.toLowerCase() && 
+           solicitud.codigoAsesor && solicitud.codigoAsesor.toLowerCase() === codigoAsesorActual.toLowerCase())) {
+        
+        fila.innerHTML = `
+          <td>${solicitud.id}</td>
+          <td>${solicitud.tipo}</td>
+          <td>${solicitud.descripcion}</td>
+          <td>${solicitud.estado}</td>
+          <td>${solicitud.fechaCreacion}</td>
+          <td>${solicitud.fechaRespuesta || '-'}</td>
+          <td>${solicitud.asesor || 'Sin asignar'}</td>
+          <td>
+            <div class="action-buttons">
+              <button onclick="verDetalleSolicitud(${solicitud.id})">Ver</button>
+              ${solicitud.documentoCliente ? 
+                `<button class="download" onclick="descargarDocumentoCliente(${solicitud.id})">Descargar Doc.</button>` : ''}
+              ${!solicitud.asesor ? 
+                `<button onclick="asignarme(${solicitud.id})">Asignarme</button>` : ''}
+              ${solicitud.asesor && solicitud.asesor.toLowerCase() === asesorActual.toLowerCase() ? 
+                `<button onclick="responderSolicitud(${solicitud.id})">Responder</button>` : ''}
+              ${solicitud.asesor && solicitud.asesor.toLowerCase() === asesorActual.toLowerCase() ? 
+                `<button class="upload" onclick="abrirModalSubida(${solicitud.id})">Subir Sol.</button>` : ''}
+            </div>
+          </td>
         `;
-      } else {
-        celdaAcciones.innerHTML = `
-          <button onclick="verDetalleSolicitud('${solicitud.idSolicitud}')">Ver Detalle</button>
-        `;
+        tabla.appendChild(fila);
       }
     }
     
-    // Función para actualizar el estado de una solicitud
-    function actualizarEstado(idSolicitud) {
-      const nuevoEstado = prompt("Ingrese el nuevo estado de la solicitud:", "En progreso");
+    // Función para asignarme una solicitud
+    function asignarme(idSolicitud) {
+      if (!asesorActual || !codigoAsesorActual) {
+        alert('Por favor, ingresa tu nombre y código de asesor primero');
+        return;
+      }
       
-      if (nuevoEstado) {
-        // Actualizar en localStorage
-        const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
-        const solicitudIndex = solicitudesGuardadas.findIndex(sol => sol.idSolicitud === idSolicitud);
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      const solicitudIndex = solicitudesGuardadas.findIndex(s => s.id === idSolicitud);
+      
+      if (solicitudIndex !== -1) {
+        // Asignar la solicitud al asesor actual
+        solicitudesGuardadas[solicitudIndex].asesor = asesorActual;
+        solicitudesGuardadas[solicitudIndex].codigoAsesor = codigoAsesorActual;
+        solicitudesGuardadas[solicitudIndex].correoAsesor = correoAsesorActual;
+        solicitudesGuardadas[solicitudIndex].estado = 'En proceso';
         
-        if (solicitudIndex !== -1) {
-          // Actualizar estado
-          solicitudesGuardadas[solicitudIndex].estado = nuevoEstado;
+        // Guardar cambios
+        localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesGuardadas));
+        
+        // Recargar la vista
+        cargarSolicitudesGuardadas();
+        
+        alert(`Solicitud ${idSolicitud} asignada correctamente a ${asesorActual}`);
+      }
+    }
+    
+    // Función para ver detalles de una solicitud
+    function verDetalleSolicitud(idSolicitud) {
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      const solicitud = solicitudesGuardadas.find(s => s.id === idSolicitud);
+      
+      if (solicitud) {
+        // Marcar como leída si es una notificación nueva
+        if (solicitud.nuevaNotificacion) {
+          const index = solicitudesGuardadas.findIndex(s => s.id === idSolicitud);
+          solicitudesGuardadas[index].nuevaNotificacion = false;
+          localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesGuardadas));
+          verificarNotificaciones();
+        }
+        
+        // Mostrar detalles en un alert sencillo (podría mejorarse con un modal)
+        let detalles = `
+          ID: ${solicitud.id}
+          Tipo: ${solicitud.tipo}
+          Descripción: ${solicitud.descripcion}
+          Estado: ${solicitud.estado}
+          Fecha Creación: ${solicitud.fechaCreacion}
+          Correo de contacto: ${solicitud.correoContacto || 'No disponible'}
+          Teléfono: ${solicitud.telefono || 'No disponible'}
+        `;
+        
+        if (solicitud.asesor) {
+          detalles += `\nAsesor asignado: ${solicitud.asesor} (${solicitud.codigoAsesor})`;
+        }
+        
+        if (solicitud.documentoCliente) {
+          detalles += `\nDocumento adjunto: ${solicitud.documentoCliente}`;
+        }
+        
+        if (solicitud.documentoSolucion) {
+          detalles += `\nSolución adjunta: ${solicitud.documentoSolucion}`;
+        }
+        
+        if (solicitud.respuesta) {
+          detalles += `\nRespuesta: ${solicitud.respuesta}`;
+          detalles += `\nFecha Respuesta: ${solicitud.fechaRespuesta}`;
+        }
+        
+        alert(detalles);
+        
+        // Recargar la tabla para reflejar cambios (como quitar la marca de nueva notificación)
+        if (document.getElementById('solicitudes').style.display !== 'none') {
+          cargarSolicitudesGuardadas();
+        } else {
+          mostrarMisSolicitudes();
+        }
+      }
+    }
+    
+    // Función para responder a una solicitud
+    function responderSolicitud(idSolicitud) {
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      const solicitudIndex = solicitudesGuardadas.findIndex(s => s.id === idSolicitud);
+      
+      if (solicitudIndex !== -1 && 
+          solicitudesGuardadas[solicitudIndex].asesor && 
+          solicitudesGuardadas[solicitudIndex].asesor.toLowerCase() === asesorActual.toLowerCase()) {
+        
+        const respuesta = prompt('Ingresa tu respuesta para esta solicitud:', 
+                                 solicitudesGuardadas[solicitudIndex].respuesta || '');
+        
+        if (respuesta !== null) { // Si no se canceló el prompt
+          // Actualizar la solicitud
+          solicitudesGuardadas[solicitudIndex].respuesta = respuesta;
+          solicitudesGuardadas[solicitudIndex].fechaRespuesta = new Date().toLocaleString();
+          solicitudesGuardadas[solicitudIndex].estado = 'Respondida';
           
-          // Actualizar fecha de respuesta si es necesario
-          if (nuevoEstado.toLowerCase() === 'completado' || nuevoEstado.toLowerCase() === 'completada') {
-            solicitudesGuardadas[solicitudIndex].fechaRespuesta = new Date().toLocaleDateString();
-          }
-          
+          // Guardar cambios
           localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesGuardadas));
           
           // Recargar la vista
           if (document.getElementById('solicitudes').style.display !== 'none') {
-            mostrarMisSolicitudes();
-          } else {
             cargarSolicitudesGuardadas();
+          } else {
+            mostrarMisSolicitudes();
           }
           
-          alert(`Estado de la solicitud #${idSolicitud} actualizado a "${nuevoEstado}"`);
+          alert('Respuesta registrada correctamente');
         }
+      } else {
+        alert('No tienes permisos para responder esta solicitud');
       }
-    }
-
-    // Función para ver detalle de solicitud
-    function verDetalleSolicitud(idSolicitud) {
-      // Guardar el ID para recuperarlo en la página de detalle
-      localStorage.setItem('solicitudActual', idSolicitud);
-      window.location.href = 'detalle-solicitud.html';
-    }
-
-    function eliminarFila(boton, tablaId, id) {
-      const fila = boton.closest('tr');
-      const filaIndex = fila.rowIndex - 1; // Restar 1 por el encabezado
-      
-      if (tablaId === "tareas") {
-        // Eliminar de localStorage
-        const tareasGuardadas = JSON.parse(localStorage.getItem('tareas')) || [];
-        if (id && tareasGuardadas.length > 0) {
-          const nuevasTareas = tareasGuardadas.filter(tarea => tarea.id !== id);
-          localStorage.setItem('tareas', JSON.stringify(nuevasTareas));
-        }
-      } else if (tablaId === "informes") {
-        // Eliminar de localStorage
-        const informesGuardados = JSON.parse(localStorage.getItem('informes')) || [];
-        if (id && informesGuardados.length > 0) {
-          const nuevosInformes = informesGuardados.filter(informe => informe.id !== id);
-          localStorage.setItem('informes', JSON.stringify(nuevosInformes));
-        }
-      }
-      
-      // Eliminar fila de la tabla
-      fila.remove();
-    }
-
-    function guardarEnLocalStorage(solicitud) {
-      const solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
-      solicitudes.push(solicitud);
-      localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
-    }
-
-    // Función para generar datos de prueba (solo para desarrollo)
-    function generarDatosDePrueba() {
-      const solicitudesDePrueba = [
-        {
-          idSolicitud: "SOL001",
-          tipoSolicitud: "Asesoría Contable",
-          descripcion: "Consulta sobre declaración de renta persona natural",
-          estado: "Pendiente",
-          fechaCreacion: "25/04/2025",
-          fechaRespuesta: "",
-          asesor: "María Rodríguez"
-        },
-        {
-          idSolicitud: "SOL002",
-          tipoSolicitud: "Asesoría Jurídica",
-          descripcion: "Revisión de contrato de arrendamiento",
-          estado: "En progreso",
-          fechaCreacion: "26/04/2025",
-          fechaRespuesta: "",
-          asesor: "Carlos Pérez"
-        },
-        {
-          idSolicitud: "SOL003",
-          tipoSolicitud: "Consultoría de Marketing",
-          descripcion: "Estrategia de redes sociales para emprendimiento",
-          estado: "Pendiente",
-          fechaCreacion: "27/04/2025",
-          fechaRespuesta: "",
-          asesor: "Juan López"
-        }
-      ];
-      
-      localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesDePrueba));
-      alert('Datos de prueba generados correctamente');
-      cargarSolicitudesGuardadas();
     }
     
-    // Descomenta esta línea para generar datos de prueba automáticamente la primera vez
-    // Si no hay datos en localStorage, generamos datos de prueba
-    // if(!localStorage.getItem('solicitudesDetalle')) {
-    //   generarDatosDePrueba();
-    // }
+    // Función para descargar el documento del cliente
+    function descargarDocumentoCliente(idSolicitud) {
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      const solicitud = solicitudesGuardadas.find(s => s.id === idSolicitud);
+      
+      if (solicitud && solicitud.documentoCliente) {
+        // Como es una simulación, mostramos un mensaje
+        alert(`Descargando documento: ${solicitud.documentoCliente}\n\nEn un sistema real, aquí se descargaría el archivo del servidor.`);
+        
+        // En una implementación real, aquí se realizaría la petición al servidor para descargar el archivo
+        // Por ejemplo:
+        // window.location.href = `/api/descargar-documento/${idSolicitud}`;
+      } else {
+        alert('No hay documento disponible para esta solicitud');
+      }
+    }
+    
+    // Funciones para gestionar el modal de subida de solución
+    function abrirModalSubida(idSolicitud) {
+      const modal = document.getElementById('uploadModal');
+      document.getElementById('idSolicitudUpload').textContent = idSolicitud;
+      document.getElementById('idSolicitudUpload').dataset.idSolicitud = idSolicitud;
+      modal.style.display = 'block';
+    }
+    
+    function cerrarModalSubida() {
+      const modal = document.getElementById('uploadModal');
+      modal.style.display = 'none';
+      document.getElementById('solucionFile').value = '';
+    }
+    
+    // Función para subir la solución
+    function subirSolucion() {
+      const fileInput = document.getElementById('solucionFile');
+      const idSolicitud = parseInt(document.getElementById('idSolicitudUpload').dataset.idSolicitud);
+      
+      if (fileInput.files.length === 0) {
+        alert('Por favor, selecciona un archivo');
+        return;
+      }
+      
+      const archivo = fileInput.files[0];
+      
+      // Validar el tipo de archivo (opcional)
+      const tiposPermitidos = [
+        'application/pdf', 
+        'application/msword', 
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/zip',
+        'application/x-rar-compressed'
+      ];
+      
+      if (!tiposPermitidos.includes(archivo.type)) {
+        alert('Formato de archivo no permitido. Por favor, sube un archivo PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP o RAR.');
+        return;
+      }
+      
+      // En una implementación real, aquí se enviaría el archivo al servidor
+      // Como esto es una simulación, actualizamos el registro en localStorage
+      
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      const solicitudIndex = solicitudesGuardadas.findIndex(s => s.id === idSolicitud);
+      
+      if (solicitudIndex !== -1) {
+        // Actualizar la solicitud con el nombre del archivo de solución
+        solicitudesGuardadas[solicitudIndex].documentoSolucion = archivo.name;
+        solicitudesGuardadas[solicitudIndex].fechaSubidaSolucion = new Date().toLocaleString();
+        
+        // Si ya había una respuesta, actualizar el estado
+        if (solicitudesGuardadas[solicitudIndex].respuesta) {
+          solicitudesGuardadas[solicitudIndex].estado = 'Completada';
+        } else {
+          solicitudesGuardadas[solicitudIndex].estado = 'Solución adjunta';
+        }
+        
+        // Guardar cambios
+        localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesGuardadas));
+        
+        // Cerrar el modal y recargar la vista
+        cerrarModalSubida();
+        
+        if (document.getElementById('solicitudes').style.display !== 'none') {
+          cargarSolicitudesGuardadas();
+        } else {
+          mostrarMisSolicitudes();
+        }
+        
+        alert(`Solución "${archivo.name}" adjuntada correctamente a la solicitud ${idSolicitud}`);
+      }
+    }
+    
+    // Cuando se hace clic en cualquier parte fuera del modal, cerrarlo
+    window.onclick = function(event) {
+      const modal = document.getElementById('uploadModal');
+      if (event.target === modal) {
+        cerrarModalSubida();
+      }
+    };
+    
+    // Función para verificar si hay nuevas notificaciones
+    function verificarNotificaciones() {
+      const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+      
+      // Contar notificaciones nuevas para este asesor
+      let contadorNotificaciones = 0;
+      
+      if (asesorActual && codigoAsesorActual) {
+        solicitudesGuardadas.forEach(solicitud => {
+          if (solicitud.asesor && 
+              solicitud.asesor.toLowerCase() === asesorActual.toLowerCase() &&
+              solicitud.codigoAsesor && 
+              solicitud.codigoAsesor.toLowerCase() === codigoAsesorActual.toLowerCase() &&
+              solicitud.nuevaNotificacion) {
+            contadorNotificaciones++;
+            
+            // Si encontramos una nueva notificación y no estamos mostrando ya otra,
+            // guardamos esta para mostrarla en el popup
+            if (!solicitudNotificada) {
+              solicitudNotificada = solicitud;
+              mostrarNotificacionPopup(solicitud);
+            }
+          }
+        });
+      }
+      
+      // Actualizar el contador en la interfaz
+      const contadorElemento = document.getElementById('contador-notificaciones');
+      if (contadorNotificaciones > 0) {
+        contadorElemento.textContent = contadorNotificaciones;
+        contadorElemento.style.display = 'inline-block';
+      } else {
+        contadorElemento.style.display = 'none';
+      }
+    }
+    
+    // Función para mostrar el popup de notificación
+    function mostrarNotificacionPopup(solicitud) {
+      const popup = document.getElementById('notificacionPopup');
+      const mensaje = document.getElementById('notificacionMensaje');
+      
+      // Configurar el mensaje
+      mensaje.textContent = `Has recibido una nueva solicitud: "${solicitud.descripcion.substring(0, 50)}${solicitud.descripcion.length > 50 ? '...' : ''}"`;
+      
+      // Mostrar el popup
+      popup.style.display = 'block';
+    }
+    
+    // Función para cerrar la notificación
+    function cerrarNotificacion() {
+      const popup = document.getElementById('notificacionPopup');
+      popup.style.display = 'none';
+      solicitudNotificada = null;
+    }
+    
+    // Función para ver la solicitud notificada
+function verSolicitudNotificada() {
+  if (solicitudNotificada) {
+    verDetalleSolicitud(solicitudNotificada.id);
+    cerrarNotificacion();
+    
+    // Marcar como leída
+    const solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudesDetalle')) || [];
+    const solicitudIndex = solicitudesGuardadas.findIndex(s => s.id === solicitudNotificada.id);
+    
+    if (solicitudIndex !== -1) {
+      solicitudesGuardadas[solicitudIndex].nuevaNotificacion = false;
+      localStorage.setItem('solicitudesDetalle', JSON.stringify(solicitudesGuardadas));
+      verificarNotificaciones();
+    }
+  }
+}
   </script>
 </body>
 </html>
