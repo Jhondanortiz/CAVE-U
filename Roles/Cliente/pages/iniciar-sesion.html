@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - CAVE-U</title>
+    <title>Inicio de Sesión - CAVE-U</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
@@ -16,9 +16,9 @@
 
         <main>
             <section class="content">
-                <h2>Registro</h2>
+                <h2>Inicio de Sesión</h2>
                 
-                <form class="form-box" id="registroForm">
+                <form class="form-box" id="loginForm">
                     <label for="usuario">Usuario:</label>
                     <input type="text" id="usuario" name="usuario" required>
 
@@ -26,11 +26,11 @@
                     <input type="password" id="password" name="password" required>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn primary">Registrarse</button>
+                        <button type="submit" class="btn primary">Iniciar Sesión</button>
                     </div>
                     
-                    <div class="login-link">
-                        <p>¿Ya tienes una cuenta? <a href="iniciar-sesion.html">Iniciar Sesión</a></p>
+                    <div class="register-link">
+                        <p>¿No tienes cuenta? <a href="registro.html">Registrarse</a></p>
                     </div>
                 </form>
             </section>
@@ -43,33 +43,35 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const registroForm = document.getElementById('registroForm');
+            const loginForm = document.getElementById('loginForm');
             
-            registroForm.addEventListener('submit', function(e) {
+            loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 const usuario = document.getElementById('usuario').value;
                 const password = document.getElementById('password').value;
                 
-                // Verificar si el usuario ya existe
+                // Recuperar usuarios registrados
                 const usuariosRegistrados = JSON.parse(localStorage.getItem('usuarios') || '[]');
-                const usuarioExistente = usuariosRegistrados.find(u => u.usuario === usuario);
                 
-                if (usuarioExistente) {
-                    alert('Este usuario ya está registrado.');
-                    return;
+                // Buscar el usuario
+                const usuarioEncontrado = usuariosRegistrados.find(u => 
+                    (u.usuario === usuario || u.correo === usuario) && u.password === password
+                );
+                
+                if (usuarioEncontrado) {
+                    // Guardar sesión activa
+                    localStorage.setItem('usuarioActual', JSON.stringify({
+                        usuario: usuarioEncontrado.usuario,
+                        correo: usuarioEncontrado.correo
+                    }));
+                    
+                    alert('¡Inicio de sesión exitoso!');
+                    // Redirigir a la página principal o dashboard
+                    window.location.href = '../index.html';
+                } else {
+                    alert('Usuario o contraseña incorrectos.');
                 }
-                
-                // Guardar el nuevo usuario
-                usuariosRegistrados.push({
-                    usuario: usuario,
-                    password: password
-                });
-                
-                localStorage.setItem('usuarios', JSON.stringify(usuariosRegistrados));
-                
-                alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-                window.location.href = 'iniciar-sesion.html';
             });
         });
     </script>

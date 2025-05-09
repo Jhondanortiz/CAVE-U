@@ -1,41 +1,90 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultorio Académico Virtual Empresarial Uniminuto</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-    <div class="wrapper">
-        <header>
-            <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
-        </header>
+<!DOCTYPE html> 
+<html lang="es"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Consultorio Académico Virtual Empresarial Uniminuto</title> 
+    <link rel="stylesheet" href="css/styles.css"> 
+</head> 
+<body> 
+    <div class="wrapper"> 
+        <header> 
+            <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1> 
+        </header> 
 
-        <main class="container">
-            <div class="home-content">
-                <div class="home-info">
-                    <h2>Página de Inicio</h2>
-                    <p>Información General</p>
-                    <div class="home-image">
-                        <!-- Imagen representativa -->
-                        <img src="img/images.png" alt="Imagen representativa de la plataforma" />
-                    </div>
-                </div>
+        <main class="container"> 
+            <div class="home-content"> 
+                <div class="home-info"> 
+                    <h2>Bienvenido a CAVE-U</h2> 
+                    <p>Plataforma de consultoría académica para estudiantes y empresarios</p> 
+                    <div class="home-image"> 
+                        <!-- Imagen representativa --> 
+                        <img src="img/images.png" alt="Imagen representativa de la plataforma" /> 
+                    </div> 
+                </div> 
 
-                <div class="action-buttons">
-                    <!-- Botón de inicio de sesión -->
-                    <a href="pages/registro.html" class="btn primary">Iniciar Sesión</a>
-                </div>
-            </div>
-        </main>
+                <div class="login-container"> 
+                    <h3>Acceso al sistema</h3>
+                    <div id="loginError" class="error-message" style="display: none; color: red; margin-bottom: 10px;"></div>
+                    <form id="loginForm"> 
+                        <div class="form-group"> 
+                            <label for="username">Usuario:</label> 
+                            <input type="text" id="username" name="username" placeholder="Ingrese su usuario" required> 
+                        </div> 
+                         
+                        <div class="form-group"> 
+                            <label for="password">Contraseña:</label> 
+                            <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required> 
+                        </div> 
+                         
+                        <div class="form-actions"> 
+                            <button type="submit" class="btn primary" id="btnLogin">Iniciar Sesión</button>
+                            <p>¿No tienes cuenta? </p> 
+                            <button type="button" id="btnGoToRegister" class="btn-link">Registrarse</button> 
+                        </div> 
+                    </form> 
+                </div> 
+            </div> 
+        </main> 
 
-        <footer>
-            <p>&copy; 2025 CAVE-U</p>
-        </footer>
-    </div>
+        <footer> 
+            <p>&copy; 2025 CAVE-U</p> 
+        </footer> 
+    </div> 
 
-    <script src="js/main.js"></script>
-    <script src="js/navigation.js"></script>
-</body>
+    <script>
+        // Script para manejar el inicio de sesión y registro 
+        document.addEventListener('DOMContentLoaded', function() { 
+            const loginForm = document.getElementById('loginForm'); 
+            const btnGoToRegister = document.getElementById('btnGoToRegister'); 
+            const loginError = document.getElementById('loginError');
+             
+            loginForm.addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                const username = document.getElementById('username').value.trim(); 
+                const password = document.getElementById('password').value.trim(); 
+                
+                loginError.style.display = 'none';
+                
+                if (username && password) {
+                    const btnLogin = document.getElementById('btnLogin');
+                    btnLogin.textContent = 'Cargando...';
+                    btnLogin.disabled = true;
+
+                    setTimeout(function() {
+                        // Redirige al archivo local en el sistema (solo funcionará correctamente si se abre desde un navegador con acceso al sistema de archivos o en un entorno local con permisos adecuados)
+                        window.location.href = 'file:///C:/Users/Daniel/Desktop/CAVE-U/Roles/Cliente/pages/perfil.html';
+                    }, 1000);
+                } else {
+                    loginError.textContent = 'Por favor completa todos los campos';
+                    loginError.style.display = 'block';
+                }
+            }); 
+             
+            btnGoToRegister.addEventListener('click', function() { 
+                window.location.href = 'pages/registro.html'; 
+            }); 
+        }); 
+    </script>
+</body> 
 </html>
