@@ -12,39 +12,34 @@
       <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
       <nav>
         <ul>
-          <li><a href="../index.html">Inicio</a></li>
           <li><a href="catalogo.html" class="active">Catálogo</a></li>
-          <li><a href="registro.html">Registro</a></li>
           <li><a href="perfil.html">Perfil</a></li>
-          <li><a href="ejecucion.html">Ejecución</a></li>
           <li><a href="solicitudes.html">Solicitudes</a></li>
-          <li><a href="notificaciones.html">Notificaciones</a></li>
-          <li><a href="ayuda.html">Ayuda</a></li>
         </ul>
       </nav>
     </header>
 
     <main>
-        <section class="content">
-          <h2>Catálogo de Servicios</h2>
-          <p>Consulta los servicios académicos y empresariales disponibles en el consultorio CAVE-U.</p>
-      
-          <!-- Filtro de Categoría -->
-          <label for="categoriaSelect">Filtrar por categoría:</label>
-          <select id="categoriaSelect">
-            <option value="todas">Todas</option>
-            <option value="Contable">Contable</option>
-            <option value="Administrativa">Administrativa</option>
-            <option value="Empresarial">Empresarial</option>
-            <option value="Legal">Legal</option>
-          </select>
-      
-          <!-- Lista de servicios en contenedor -->
-          <div id="listaServicios" class="servicios-container"></div>
-      
-          <p><a href="../index.html" class="btn">Volver al inicio</a></p>
-        </section>
-      </main>
+      <section class="content">
+        <h2>Catálogo de Servicios</h2>
+        <p>Consulta los servicios académicos y empresariales disponibles en el consultorio CAVE-U.</p>
+    
+        <!-- Filtro de Categoría -->
+        <label for="categoriaSelect">Filtrar por categoría:</label>
+        <select id="categoriaSelect">
+          <option value="todas">Todas</option>
+          <option value="Contable">Contable</option>
+          <option value="Administrativa">Administrativa</option>
+          <option value="Empresarial">Empresarial</option>
+          <option value="Legal">Legal</option>
+        </select>
+    
+        <!-- Lista de servicios en contenedor -->
+        <div id="listaServicios" class="servicios-container"></div>
+    
+        <p><a href="../index.html" class="btn">Volver al inicio</a></p>
+      </section>
+    </main>
 
     <footer>
       <p>&copy; 2025 CAVE-U</p>
@@ -52,6 +47,7 @@
   </div>
 
   <script>
+    // Datos de servicios disponibles
     const servicios = [
       {
         idServicio: "001",
@@ -82,6 +78,7 @@
     const listaServicios = document.getElementById("listaServicios");
     const categoriaSelect = document.getElementById("categoriaSelect");
 
+    // Función que renderiza los servicios según el filtro seleccionado
     function renderServicios(filtro = "todas") {
       listaServicios.innerHTML = "";
       const filtrados = filtro === "todas" ? servicios : servicios.filter(s => s.categoria === filtro);
@@ -89,12 +86,29 @@
       filtrados.forEach(servicio => {
         const div = document.createElement("div");
         div.classList.add("servicio-card");
+        
+        // Crear el contenido HTML para la información del servicio
         div.innerHTML = `
           <h3>${servicio.nombre}</h3>
           <p>${servicio.descripcion}</p>
           <p><strong>Categoría:</strong> ${servicio.categoria}</p>
-          <a href="registro.html?idServicio=${servicio.idServicio}" class="btn">Solicitar</a>
         `;
+        
+        // Crear el botón de manera separada para mayor control
+        const botonSolicitar = document.createElement("button");
+        botonSolicitar.className = "btn";
+        botonSolicitar.textContent = "Solicitar";
+        
+        // Añadir evento de clic directamente al botón
+        botonSolicitar.addEventListener("click", function(e) {
+          e.preventDefault(); // Prevenir comportamiento predeterminado
+          redirigirADetalleSolicitud(servicio.idServicio);
+        });
+        
+        // Añadir el botón al div del servicio
+        div.appendChild(botonSolicitar);
+        
+        // Añadir el div completo al contenedor
         listaServicios.appendChild(div);
       });
 
@@ -103,14 +117,40 @@
       }
     }
 
+    // Función específica para la redirección
+    function redirigirADetalleSolicitud(idServicio) {
+      console.log("Redireccionando a detalle-solicitud.html con ID:", idServicio);
+      
+      // Aseguramos que la URL sea la correcta (usamos ruta relativa al directorio actual)
+      const url = `detalle-solicitud.html?idServicio=${idServicio}`;
+      
+      // Usar location.assign en lugar de location.href para forzar la navegación
+      window.location.assign(url);
+      
+      // Como alternativa, también podríamos usar:
+      // window.location.href = url;
+      
+      // Si estás teniendo problemas con la redirección, puedes intentar con la ruta absoluta:
+      // const rutaAbsoluta = window.location.origin + "/Roles/Cliente/pages/detalle-solicitud.html?idServicio=" + idServicio;
+      // window.location.assign(rutaAbsoluta);
+    }
+
+    // Evento de cambio en el selector de categoría
     categoriaSelect.addEventListener("change", () => {
       renderServicios(categoriaSelect.value);
     });
 
-    // Render inicial
+    // Render inicial de servicios
     renderServicios();
+    
+    // Desactivar cualquier comportamiento predeterminado que pueda interferir con nuestras redirecciones
+    // Esto es útil si hay algún código en main.js o navigation.js que pueda estar interfiriendo
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log("Página de catálogo cargada correctamente");
+    });
   </script>
 
+  <!-- Cargar scripts externos después de nuestro código principal -->
   <script src="../js/main.js"></script>
   <script src="../js/navigation.js"></script>
 </body>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solicitudes - CAVE-U</title>
-  <link rel="stylesheet" href="../css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis Solicitudes - CAVE-U</title>
+  <link rel="stylesheet" href="../css/styles.css" />
 </head>
 <body>
   <div class="container">
@@ -12,14 +12,9 @@
       <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
       <nav>
         <ul>
-          <li><a href="../index.html">Inicio</a></li>
           <li><a href="catalogo.html">Catálogo</a></li>
-          <li><a href="registro.html">Registro</a></li>
           <li><a href="perfil.html">Perfil</a></li>
-          <li><a href="ejecucion.html">Ejecución</a></li>
-          <li><a href="solicitudes.html" class="active">Solicitudes</a></li>
-          <li><a href="notificaciones.html">Notificaciones</a></li>
-          <li><a href="ayuda.html">Ayuda</a></li>
+          <li><a href="solicitudes.html">Solicitudes</a></li>
         </ul>
       </nav>
     </header>
@@ -27,92 +22,175 @@
     <main>
       <section class="content">
         <h2>Lista de Solicitudes</h2>
-
-        <!-- Filtros -->
-        <div class="filters">
-          <label for="estado">Filtrar por Estado:</label>
-          <select id="estado" name="estado">
-            <option value="todos">Todos</option>
-            <option value="Pendiente">Pendiente</option>
-            <option value="Aprobado">Aprobado</option>
-            <option value="Rechazado">Rechazado</option>
-          </select>
-
-          <label for="fecha">Filtrar por Fecha:</label>
-          <input type="date" id="fecha" name="fecha">
+        <div class="filter-section">
+          <div class="filter-group">
+            <label for="filtroEstado">Filtrar por Estado:</label>
+            <select id="filtroEstado" onchange="renderTable()">
+              <option value="Todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En revisión">En revisión</option>
+              <option value="Completada">Completada</option>
+              <option value="Subido">Subido</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filtroFecha">Filtrar por Fecha:</label>
+            <input type="date" id="filtroFecha" onchange="renderTable()">
+          </div>
         </div>
-
-        <!-- Tabla de solicitudes -->
-        <table class="tabla-solicitudes">
-          <thead>
-            <tr>
-              <th>ID Solicitud</th>
-              <th>Tipo Solicitud</th>
-              <th>Estado</th>
-              <th>Fecha Solicitud</th>
-            </tr>
-          </thead>
-          <tbody id="tablaSolicitudesBody">
-            <!-- Se llenará dinámicamente -->
-          </tbody>
-        </table>
-
-        <!-- Botón de detalle -->
-        <div class="form-actions">
-          <a href="detalle-solicitud.html" class="btn primary">Ver mis solicitudes</a>
+        <div id="solicitudesList">
+          <!-- La tabla se generará dinámicamente -->
         </div>
       </section>
     </main>
-    <p><a href="../index.html" class="btn">Volver al inicio</a></p>
+
     <footer>
-      <p>&copy; 2025 CAVE-U</p>
+      <p>© 2025 CAVE-U</p>
     </footer>
   </div>
 
+  <script>
+    // Recuperar todas las solicitudes desde localStorage
+    let solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudes')) || [];
+
+    const solicitudesList = document.getElementById('solicitudesList');
+    const today = new Date('2025-05-15'); // Current date: May 15, 2025
+
+    function generateSolicitudId() {
+      const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+      return `SOL-${randomNum}`;
+    }
+
+    // Asegurar que las solicitudes tengan los campos necesarios
+    solicitudesGuardadas = solicitudesGuardadas.map(solicitud => ({
+      ...solicitud,
+      idSolicitud: solicitud.idSolicitud || generateSolicitudId(),
+      titulo: solicitud.titulo || '',
+      fechaCreacion: solicitud.fechaCreacion || today.toISOString().split('T')[0],
+      estado: solicitud.estado || 'Pendiente'
+    }));
+
+    // Guardar las solicitudes actualizadas
+    localStorage.setItem('solicitudes', JSON.stringify(solicitudesGuardadas));
+
+    function renderTable() {
+      const filtroEstado = document.getElementById('filtroEstado').value;
+      const filtroFecha = document.getElementById('filtroFecha').value;
+
+      let solicitudesFiltradas = solicitudesGuardadas;
+
+      // Filtrar por estado
+      if (filtroEstado !== 'Todos') {
+        solicitudesFiltradas = solicitudesFiltradas.filter(s => s.estado === filtroEstado);
+      }
+
+      // Filtrar por fecha
+      if (filtroFecha) {
+        solicitudesFiltradas = solicitudesFiltradas.filter(s => s.fechaCreacion === filtroFecha);
+      }
+
+      if (solicitudesFiltradas.length > 0) {
+        let tableHTML = `
+          <table class="solicitudes-table">
+            <thead>
+              <tr>
+                <th>idSolicitud</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Fecha Creación</th>
+                <th>Fecha de Respuesta</th>
+                <th>Documento Subido</th>
+                <th>Solución/Respuesta</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        solicitudesFiltradas.forEach((solicitud, index) => {
+          const descripcion = solicitud.titulo || '';
+          const fechaCreacion = solicitud.fechaCreacion || today.toISOString().split('T')[0];
+          const documentoSubido = solicitud.documentoSubido || '';
+          const hasDocument = !!solicitud.documentoSubido;
+
+          tableHTML += `
+            <tr>
+              <td>${solicitud.idSolicitud}</td>
+              <td>${descripcion}</td>
+              <td>${solicitud.estado}</td>
+              <td>${fechaCreacion}</td>
+              <td>${solicitud.fechaRespuesta || 'Pendiente'}</td>
+              <td>
+                <span class="document-status">
+                  ${documentoSubido}
+                  <span class="${hasDocument ? 'icon-uploaded' : 'icon-not-uploaded'}">
+                    ${hasDocument ? '✅' : '❌'}
+                  </span>
+                </span>
+                <button class="btn-eliminar" onclick="eliminarSolicitud(${index})">Eliminar</button>
+              </td>
+              <td>
+                ${solicitud.estado === 'Completada' ? 
+                  `<button class="btn-descargar" onclick="descargarSolucion(${index})">Descargar solución</button>` : 
+                  solicitud.estado}
+              </td>
+            </tr>
+          `;
+        });
+
+        tableHTML += `
+            </tbody>
+          </table>
+        `;
+        solicitudesList.innerHTML = tableHTML;
+      } else {
+        solicitudesList.innerHTML = `
+          <div class="no-solicitudes">
+            <p>No se encontraron solicitudes con los filtros aplicados.</p>
+            <p><a href="catalogo.html" class="btn">Ir al catálogo</a></p>
+          </div>
+        `;
+      }
+    }
+
+    // Función para eliminar una solicitud
+    function eliminarSolicitud(index) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta solicitud?')) {
+        solicitudesGuardadas.splice(index, 1);
+        localStorage.setItem('solicitudes', JSON.stringify(solicitudesGuardadas));
+        renderTable();
+      }
+    }
+
+    // Simulación de descarga de solución
+    function descargarSolucion(index) {
+      const solicitud = solicitudesGuardadas[index];
+      const solutionText = `
+Solución para la solicitud ${solicitud.idSolicitud}
+--------------------------------------------
+Servicio: ${solicitud.servicio}
+Descripción: ${solicitud.titulo || 'Sin descripción'}
+Fecha de Creación: ${solicitud.fechaCreacion}
+Fecha de Respuesta: ${solicitud.fechaRespuesta}
+--------------------------------------------
+Esta es una solución simulada para su solicitud. En una aplicación real, aquí se incluirían detalles específicos de la solución.
+      `.trim();
+
+      const blob = new Blob([solutionText], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `solucion_${solicitud.idSolicitud}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+
+    // Renderizar la tabla al cargar la página
+    renderTable();
+  </script>
+
   <script src="../js/main.js"></script>
   <script src="../js/navigation.js"></script>
-
-  <!-- Script para cargar y filtrar solicitudes -->
-  <script>
-    const solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
-    const tbody = document.getElementById("tablaSolicitudesBody");
-    const estadoSelect = document.getElementById("estado");
-    const fechaInput = document.getElementById("fecha");
-
-    function mostrarSolicitudes(filtradas) {
-      tbody.innerHTML = "";
-      filtradas.forEach(solicitud => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${solicitud.id}</td>
-          <td>${solicitud.tipo}</td>
-          <td>${solicitud.estado}</td>
-          <td>${solicitud.fecha}</td>
-        `;
-        fila.onclick = () => window.location.href = "detalle-solicitud.html?id=" + solicitud.id;
-        tbody.appendChild(fila);
-      });
-    }
-
-    function aplicarFiltros() {
-      const estadoFiltro = estadoSelect.value;
-      const fechaFiltro = fechaInput.value;
-
-      const filtradas = solicitudes.filter(s => {
-        const coincideEstado = estadoFiltro === "todos" || s.estado === estadoFiltro;
-        const coincideFecha = !fechaFiltro || s.fecha === fechaFiltro;
-        return coincideEstado && coincideFecha;
-      });
-
-      mostrarSolicitudes(filtradas);
-    }
-
-    // Mostrar solicitudes al cargar
-    mostrarSolicitudes(solicitudes);
-
-    // Aplicar filtros al cambiar
-    estadoSelect.addEventListener("change", aplicarFiltros);
-    fechaInput.addEventListener("input", aplicarFiltros);
-  </script>
 </body>
 </html>

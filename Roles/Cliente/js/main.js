@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <h3>${servicio.nombre}</h3>
                         <p>${servicio.descripcion}</p>
                         <p><strong>Categoría:</strong> ${servicio.categoria}</p>
-                        <a href="registro.html?idServicio=${servicio.idServicio}" class="btn">Solicitar</a>
+                        <a href="detalle-solicitud.html?idServicio=${servicio.idServicio}" class="btn">Solicitar</a>
                     `;
                     listaServicios.appendChild(div);
                 });

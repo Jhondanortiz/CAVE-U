@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitud Enviada - CAVE-U</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+      <nav>
+        <ul>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="perfil.html">Perfil</a></li>
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="content">
+        <div class="success-message">
+          <h2>¡Solicitud enviada con éxito!</h2>
+          <p>Su solicitud ha sido recibida y será procesada por nuestro equipo.</p>
+          
+          <div class="solicitud-detalles">
+            <h3>Detalles de la solicitud:</h3>
+            <p><strong>Número de solicitud:</strong> <span id="numSolicitud"></span></p>
+            <p><strong>Servicio:</strong> <span id="nombreServicio"></span></p>
+            <p><strong>Estado actual:</strong> <span id="estadoSolicitud"></span></p>
+            <p><strong>Fecha estimada de respuesta:</strong> <span id="fechaRespuesta"></span></p>
+          </div>
+          
+          <p>Puede revisar el estado de su solicitud en la sección de <a href="solicitudes.html">Solicitudes</a>.</p>
+          
+          <div class="action-buttons">
+            <a href="catalogo.html" class="btn">Volver al catálogo</a>
+            <a href="solicitudes.html" class="btn">Ver mis solicitudes</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 CAVE-U</p>
+    </footer>
+  </div>
+
+  <script>
+    // Generar un ID único para la solicitud
+    function generarId() {
+      return 'solicitud-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // Crear un objeto de solicitud
+    const nuevaSolicitud = {
+      id: generarId(),
+      servicio: "Tipo de Servicio", // Cambia esto según el servicio
+      estado: "Pendiente",
+      fechaRespuesta: new Date(new Date().setDate(new Date().getDate() + 7)).toLocaleDateString() // Fecha estimada de respuesta
+    };
+
+    // Guardar la solicitud en localStorage
+    let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+    solicitudes.push(nuevaSolicitud);
+    localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
+
+    // Mostrar los detalles de la solicitud
+    document.getElementById('numSolicitud').textContent = nuevaSolicitud.id;
+    document.getElementById('nombreServicio').textContent = nuevaSolicitud.servicio;
+    document.getElementById('estadoSolicitud').textContent = nuevaSolicitud.estado;
+    document.getElementById('fechaRespuesta').textContent = nuevaSolicitud.fechaRespuesta;
+  </script>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/navigation.js"></script>
+</body>
+</html>

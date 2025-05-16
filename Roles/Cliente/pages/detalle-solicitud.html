@@ -1,222 +1,233 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Detalle de la Solicitud - CAVE-U</title>
-  <link rel="stylesheet" href="../css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalle de Solicitud - CAVE-U</title>
+  <link rel="stylesheet" href="../css/styles.css" />
 </head>
 <body>
-  <div class="wrapper">
+  <div class="container">
     <header>
       <h1>Consultorio Académico Virtual Empresarial Uniminuto</h1>
+      <nav>
+        <ul>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="perfil.html">Perfil</a></li>
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+        </ul>
+      </nav>
     </header>
 
     <main>
-      <a href="inicio.html" class="volver">← Volver al Inicio</a>
-      <a href="ejecucion.html" class="volver">← Volver a Ejecución del Servicio</a>
-
-      <h2>ADV Detalles de la solicitud</h2>
-      <div class="detalle-solicitud">
-        <p><strong>ID Solicitud:</strong> <span id="idSolicitud">12345</span></p>
-        <p><strong>Solicitud:</strong> <span id="solicitud">Asesoría contable</span></p>
-        <p><strong>Descripción:</strong> <span id="descripcion">Solicitud para asesoría financiera para PyMEs</span></p>
-        <p><strong>Correo:</strong> <span id="correo">cliente@ejemplo.com</span></p>
-        <p><strong>Estado:</strong> <span id="estado">Pendiente</span></p>
-        <p><strong>Fecha Creación:</strong> <span id="fechaCreacion">2025-03-31</span></p>
-        <p><strong>Fecha de Respuesta:</strong> <span id="fechaRespuesta">2025-04-01</span></p>
-      </div>
-
-      <div class="file-upload">
-        <h3>Subir documentos para esta solicitud</h3>
-        <input type="file" id="documentoSolicitud" name="documentoSolicitud">
-        <button onclick="subirDocumento()">Subir Documento</button>
-        <div id="mensajeSubida"></div>
-      </div>
-
-      <div class="tabla-tareas">
-        <h3>TABLA: Tareas (asociadas a la solicitud)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>idSolicitud</th>
-              <th>Descripción</th>
-              <th>Estado</th>
-              <th>Fecha Creación</th>
-              <th>Fecha de Respuesta</th>
-              <th></th>
-              <th>Documento Subido</th>
-              <th>Solución/Respuesta</th>
-            </tr>
-          </thead>
-          <tbody id="tablaTareas">
-            <tr id="tarea-1">
-              <td>12345</td>
-              <td>Revisión de documentos financieros</td>
-              <td>En proceso</td>
-              <td>2025-04-01</td>
-              <td>2025-04-02</td>
-              <td><button class="btn-eliminar" onclick="eliminarTarea(1)">Eliminar</button></td>
-              <td>
-                <div class="file-icon">
-                  <i>📄</i> balance-financiero.pdf
-                  <span class="estado-upload exito">Subido</span>
-                </div>
-              </td>
-              <td>
-                <span class="en-proceso">En proceso</span>
-              </td>
-            </tr>
-            <tr id="tarea-2">
-              <td>12345</td>
-              <td>Análisis de flujo de caja</td>
-              <td>Completado</td>
-              <td>2025-04-02</td>
-              <td>2025-04-05</td>
-              <td><button class="btn-eliminar" onclick="eliminarTarea(2)">Eliminar</button></td>
-              <td>
-                <div class="file-icon">
-                  <i>📊</i> flujo-caja-2025.xlsx
-                  <span class="estado-upload exito">Subido</span>
-                </div>
-              </td>
-              <td>
-                <a href="#" class="btn-descargar" onclick="descargarSolucion('solucion-flujo-caja.pdf')">
-                  <i>📥</i> Descargar solución
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="botones">
-        <button class="guardar" onclick="guardarSolicitud()">Guardar</button>
-        <button class="cancelar" onclick="cancelar()">Cancelar</button>
-        <button class="ejecutar" onclick="ejecutarSolicitud()">Ejecutar</button>
-        <button class="eliminar" onclick="eliminarSolicitud()">Eliminar</button>
-      </div>
+      <section class="content">
+        <h2 id="formularioTitulo">Formulario de Solicitud de Servicio</h2>
+        
+        <div class="info-box">
+          <p>Está solicitando: <strong id="nombreServicio"></strong></p>
+          <p id="descripcionServicio"></p>
+        </div>
+        
+        <div class="form-container">
+          <form id="solicitudForm" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="titulo">Título de la solicitud:</label>
+              <input type="text" id="titulo" name="titulo" required placeholder="Ingrese un título descriptivo para su solicitud">
+            </div>
+            
+            <div class="form-group">
+              <label for="descripcion">Descripción detallada:</label>
+              <textarea id="descripcion" name="descripcion" required placeholder="Describa detalladamente su requerimiento o consulta"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="correo">Correo electrónico de contacto:</label>
+              <input type="email" id="correo" name="correo" required placeholder="correo@ejemplo.com">
+            </div>
+            
+            <div class="form-group">
+              <label for="documento">Subir documento (máximo 1 archivo o comprimido .zip/.rar):</label>
+              <input type="file" id="documento" name="documento" accept=".zip,.rar,.pdf,.doc,.docx,.xlsx" onchange="validateFile(this)">
+              <p class="file-limit-note">Tamaño máximo: 10MB</p>
+              <p id="fileError" class="error-message"></p>
+            </div>
+            
+            <input type="hidden" id="idServicio" name="idServicio">
+            <input type="hidden" id="categoriaServicio" name="categoriaServicio">
+            
+            <div class="form-actions">
+              <button type="submit" class="btn" id="btnEnviar">Enviar Solicitud</button>
+              <a href="catalogo.html" class="btn">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </section>
     </main>
-    <p><a href="../index.html" class="btn">Volver al inicio</a></p>
+
     <footer>
-      <p>&copy; 2025 CAVE-U</p>
+      <p>© 2025 CAVE-U</p>
     </footer>
   </div>
 
   <script>
-    function guardarSolicitud() {
-      alert('Cambios guardados exitosamente.');
-    }
-
-    function cancelar() {
-      window.location.href = "ejecucion.html";
-    }
-
-    function ejecutarSolicitud() {
-      const estado = document.getElementById("estado");
-      const fechaRespuesta = document.getElementById("fechaRespuesta");
-
-      if (estado.innerText === "Ejecutada") {
-        alert("Esta solicitud ya fue ejecutada.");
-        return;
+    // Obtener parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const idServicio = urlParams.get('idServicio');
+    
+    // Información de servicios
+    const servicios = [
+      {
+        idServicio: "001",
+        nombre: "Asesorías contables",
+        descripcion: "Asesoría en procesos contables empresariales.",
+        categoria: "Contable",
+        tituloFormulario: "Solicitud de Asesoría Contable"
+      },
+      {
+        idServicio: "002",
+        nombre: "Consultorías administrativas",
+        descripcion: "Optimización de procesos administrativos.",
+        categoria: "Administrativa",
+        tituloFormulario: "Solicitud de Consultoría Administrativa"
+      },
+      {
+        idServicio: "003",
+        nombre: "Capacitaciones empresariales",
+        descripcion: "Formación y talleres para empresas.",
+        categoria: "Empresarial",
+        tituloFormulario: "Solicitud de Capacitación Empresarial"
+      },
+      {
+        idServicio: "004",
+        nombre: "Soporte legal y tributario",
+        descripcion: "Apoyo en temas legales y fiscales.",
+        categoria: "Legal",
+        tituloFormulario: "Solicitud de Soporte Legal y Tributario"
       }
-
-      estado.innerText = "Ejecutada";
-      const hoy = new Date().toISOString().split('T')[0];
-      fechaRespuesta.innerText = hoy;
-
-      alert("Solicitud ejecutada correctamente.");
-    }
-
-    function eliminarSolicitud() {
-      if (confirm("¿Estás seguro de que deseas eliminar esta solicitud? Esta acción no se puede deshacer.")) {
-        alert("Solicitud eliminada.");
-        window.location.href = "ejecucion.html";
+    ];
+    
+    // Buscar el servicio seleccionado
+    const servicioSeleccionado = servicios.find(s => s.idServicio === idServicio);
+    
+    // Verificar si se encontró el servicio
+    if (servicioSeleccionado) {
+      document.getElementById('formularioTitulo').textContent = servicioSeleccionado.tituloFormulario;
+      document.getElementById('nombreServicio').textContent = servicioSeleccionado.nombre;
+      document.getElementById('descripcionServicio').textContent = servicioSeleccionado.descripcion;
+      document.getElementById('idServicio').value = servicioSeleccionado.idServicio;
+      document.getElementById('categoriaServicio').value = servicioSeleccionado.categoria;
+      
+      const placeholdersPorCategoria = {
+        "Contable": "Ejemplo: Necesito asesoría para elaborar estados financieros de mi PyME",
+        "Administrativa": "Ejemplo: Requiero consultoría para optimizar los procesos de gestión de mi empresa",
+        "Empresarial": "Ejemplo: Solicito capacitación en habilidades de liderazgo para mi equipo de trabajo",
+        "Legal": "Ejemplo: Necesito asesoría sobre obligaciones tributarias para mi negocio"
+      };
+      
+      if (placeholdersPorCategoria[servicioSeleccionado.categoria]) {
+        document.getElementById('descripcion').placeholder = placeholdersPorCategoria[servicioSeleccionado.categoria];
       }
+    } else {
+      document.querySelector('.content').innerHTML = `
+        <h2>Error en la solicitud</h2>
+        <p>El servicio seleccionado no existe o no está disponible.</p>
+        <p><a href="catalogo.html" class="btn">Volver al catálogo</a></p>
+      `;
     }
     
-    function eliminarTarea(idTarea) {
-      if (confirm("¿Estás seguro de que deseas eliminar esta tarea? Esta acción no se puede deshacer.")) {
-        const fila = document.getElementById(`tarea-${idTarea}`);
-        if (fila) {
-          fila.remove();
-          alert("Tarea eliminada correctamente.");
+    // Validar el archivo seleccionado
+    function validateFile(input) {
+      const file = input.files[0];
+      const errorElement = document.getElementById('fileError');
+      const maxSizeMB = 10;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024; // 10MB in bytes
+
+      errorElement.textContent = ''; // Limpiar mensaje de error previo
+
+      if (file) {
+        if (input.files.length > 1) {
+          errorElement.textContent = 'Solo puede subir un archivo a la vez. Use .zip o .rar para múltiples archivos.';
+          input.value = '';
+          return;
+        }
+        if (!file.name.match(/\.(zip|rar|pdf|doc|docx|xlsx)$/i)) {
+          errorElement.textContent = 'Formato no permitido. Use .zip, .rar, .pdf, .doc, .docx o .xlsx.';
+          input.value = '';
+          return;
+        }
+        if (file.size > maxSizeBytes) {
+          errorElement.textContent = `El archivo excede el límite de ${maxSizeMB}MB.`;
+          input.value = '';
+          return;
         }
       }
     }
     
-    function subirDocumento() {
-      const fileInput = document.getElementById('documentoSolicitud');
-      const mensajeDiv = document.getElementById('mensajeSubida');
+    // Manejar el envío del formulario
+    document.getElementById('solicitudForm').addEventListener('submit', function(event) {
+      event.preventDefault();
       
-      if (!fileInput.files || fileInput.files.length === 0) {
-        mensajeDiv.innerHTML = '<p style="color: red;">Por favor seleccione un archivo para subir.</p>';
+      // Validar archivo antes de enviar
+      const fileInput = document.getElementById('documento');
+      const errorElement = document.getElementById('fileError');
+      if (fileInput.files.length === 0) {
+        errorElement.textContent = 'Por favor, suba un documento.';
+        return;
+      }
+      if (errorElement.textContent !== '') {
         return;
       }
       
-      const fileName = fileInput.files[0].name;
+      // Generar ID aleatorio para la solicitud
+      const idSolicitud = Math.floor(10000 + Math.random() * 90000);
       
-      // Simulamos la subida del archivo (en un caso real, esto sería una petición AJAX)
-      mensajeDiv.innerHTML = '<p style="color: blue;">Subiendo archivo...</p>';
+      // Obtener los valores del formulario
+      const titulo = document.getElementById('titulo').value;
+      const descripcion = document.getElementById('descripcion').value;
+      const correo = document.getElementById('correo').value;
+      const categoria = document.getElementById('categoriaServicio').value;
+      const file = fileInput.files[0];
       
-      setTimeout(() => {
-        // Simulamos que la subida fue exitosa
-        mensajeDiv.innerHTML = `<p style="color: green;">El archivo "${fileName}" se ha subido correctamente.</p>`;
-        
-        // Agregamos el archivo a la tabla
-        const tablaTareas = document.getElementById('tablaTareas');
-        const nuevaFila = document.createElement('tr');
-        const idNuevaTarea = tablaTareas.children.length + 1;
-        nuevaFila.id = `tarea-${idNuevaTarea}`;
-        
-        // Obtenemos la extensión del archivo para mostrar el icono adecuado
-        const extension = fileName.split('.').pop().toLowerCase();
-        let icono = '📄'; // Documento genérico por defecto
-        
-        if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(extension)) {
-          icono = '🖼️'; // Imagen
-        } else if (['pdf'].includes(extension)) {
-          icono = '📑'; // PDF
-        } else if (['doc', 'docx'].includes(extension)) {
-          icono = '📝'; // Word
-        } else if (['xls', 'xlsx'].includes(extension)) {
-          icono = '📊'; // Excel
-        } else if (['ppt', 'pptx'].includes(extension)) {
-          icono = '📽️'; // PowerPoint
-        } else if (['zip', 'rar', '7z'].includes(extension)) {
-          icono = '📦'; // Archivo comprimido
-        }
-        
-        const fechaHoy = new Date().toISOString().split('T')[0];
-        
-        nuevaFila.innerHTML = `
-          <td>12345</td>
-          <td>Nueva tarea relacionada con ${fileName}</td>
-          <td>Pendiente</td>
-          <td>${fechaHoy}</td>
-          <td>-</td>
-          <td><button class="btn-eliminar" onclick="eliminarTarea(${idNuevaTarea})">Eliminar</button></td>
-          <td>
-            <div class="file-icon">
-              <i>${icono}</i> ${fileName}
-              <span class="estado-upload exito">Subido</span>
-            </div>
-          </td>
-          <td>
-            <span class="en-proceso">En proceso</span>
-          </td>
-        `;
-        
-        tablaTareas.appendChild(nuevaFila);
-        
-        // Limpiamos el input de archivo
-        fileInput.value = '';
-      }, 1500);
-    }
-    
-    function descargarSolucion(nombreArchivo) {
-      alert(`Descargando solución: ${nombreArchivo}`);
-      // En un caso real, aquí se iniciaría la descarga del archivo
-    }
+      // Determinar estado según complejidad (simulado)
+      let estado = "Pendiente";
+      if (descripcion.length > 200) {
+        estado = "En revisión";
+      }
+      
+      // Simular almacenamiento del nombre del archivo (en una aplicación real, subiría el archivo a un servidor)
+      const documentoSubido = file ? file.name : null;
+      
+      // Crear objeto de solicitud
+      const solicitud = {
+        idSolicitud: idSolicitud,
+        servicio: servicioSeleccionado.nombre,
+        titulo: titulo,
+        descripcion: descripcion,
+        correo: correo,
+        estado: estado,
+        fechaCreacion: new Date().toISOString().split('T')[0],
+        fechaRespuesta: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        documentoSubido: documentoSubido
+      };
+      
+      // Recuperar solicitudes existentes de localStorage o inicializar un array vacío
+      let solicitudesGuardadas = JSON.parse(localStorage.getItem('solicitudes')) || [];
+      
+      // Agregar la nueva solicitud al array
+      solicitudesGuardadas.push(solicitud);
+      
+      // Guardar el array actualizado en localStorage
+      localStorage.setItem('solicitudes', JSON.stringify(solicitudesGuardadas));
+      
+      // También guardar la última solicitud para la página de confirmación
+      localStorage.setItem('ultimaSolicitud', JSON.stringify(solicitud));
+      
+      // Redirigir a la página de confirmación
+      window.location.href = `solicitud-enviada.html?id=${idSolicitud}`;
+    });
   </script>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/navigation.js"></script>
 </body>
 </html>
